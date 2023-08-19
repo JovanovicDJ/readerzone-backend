@@ -38,5 +38,20 @@ namespace readerzone_api.Controllers
             var employee = _loginService.RegisterEmployee(new Employee(employeeDto));
             return Ok(employee);
         }
+
+        [Produces("application/json")]
+        [HttpGet("activate/{id}")]
+        public ActionResult ActivateAccount(int id)
+        {
+            var status = _loginService.ActivateAccount(id);
+            var angularLoginUrl = "http://localhost:4200/login/" + status;
+            return Redirect(angularLoginUrl);
+        }
+
+        [HttpGet("forgot/password/{email}")]
+        public ActionResult ForgotPassword(string email)
+        {
+            return Ok();
+        }
     }
 }

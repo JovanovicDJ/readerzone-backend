@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using readerzone_api.Data;
 using readerzone_api.Middlewares;
 using readerzone_api.Services.CustomerService;
+using readerzone_api.Services.EmailService;
 using readerzone_api.Services.LoginService;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
@@ -22,6 +23,7 @@ builder.Services.AddDbContext<ReaderZoneContext>(options =>
 
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();

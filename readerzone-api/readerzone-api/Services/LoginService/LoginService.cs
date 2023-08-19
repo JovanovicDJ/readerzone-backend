@@ -11,18 +11,21 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using readerzone_api.Services.EmailService;
 
 namespace readerzone_api.Services.LoginService
 {
     public class LoginService : ILoginService
     {
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ReaderZoneContext _readerZoneContext;
 
-        public LoginService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ReaderZoneContext readerZoneContext)
+        public LoginService(IConfiguration configuration, IEmailService emailService, IHttpContextAccessor httpContextAccessor, ReaderZoneContext readerZoneContext)
         {
             _configuration = configuration;
+            _emailService = emailService;
             _httpContextAccessor = httpContextAccessor;
             _readerZoneContext = readerZoneContext;
         }
@@ -33,7 +36,7 @@ namespace readerzone_api.Services.LoginService
             if (userAccount == null || VerifyPassword(password, userAccount.Password))
             {
                 throw new FailedLoginException("Login credentials are incorrect.");
-            }            
+            }           
             if (userAccount.Blocked)
             {
                 throw new FailedLoginException($"User with email {userAccount.Email} is blocked.");
@@ -51,12 +54,26 @@ namespace readerzone_api.Services.LoginService
             {
                 _readerZoneContext.Customers.Add(customer);
                 _readerZoneContext.SaveChanges();
+                _emailService.SendActivationEmail(customer.Name, customer.UserAccount.Email, customer.UserAccount.Id);
                 customer.UserAccount.Password = "";
                 return customer;
             }
             else
             {
                 throw new NotCreatedException($"Customer with {customer.UserAccount.Email} email already exists.");
+            }            
+        }
+
+        public string ActivateAccount(int id)
+        {
+            var userAccount = _readerZoneContext.UserAccounts.FirstOrDefault(ua => ua.Id == id);
+            if (userAccount == null) return "invalidactivation";
+            else if (userAccount.Active) return "alreadyactive";
+            else
+            {
+                userAccount.Active = true;
+                _readerZoneContext.SaveChanges();
+                return "success";
             }            
         }
 
@@ -115,7 +132,6 @@ namespace readerzone_api.Services.LoginService
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwt;
-        }
-        
+        }        
     }
 }

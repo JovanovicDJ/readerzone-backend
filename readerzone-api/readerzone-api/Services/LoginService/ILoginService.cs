@@ -9,5 +9,7 @@ namespace readerzone_api.Services.LoginService
         public Customer RegisterCustomer(Customer customer);
 
         public Employee RegisterEmployee(Employee employee);
+
+        public string ActivateAccount(int id);
     }
 }
