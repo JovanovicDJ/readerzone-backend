@@ -15,5 +15,7 @@ namespace readerzone_api.Models
         [JsonIgnore]
         public Customer Customer { get; set; } = null!;
         public Review Review { get; set; } = null!;
+        public double FinalPrice { get; set; }
+
     }
 }

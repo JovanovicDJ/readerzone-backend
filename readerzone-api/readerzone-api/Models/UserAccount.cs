@@ -12,7 +12,8 @@ namespace readerzone_api.Models
         public int Id { get; set; }
         public string Username { get; set; } = string.Empty;       
         public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;        
+        public byte[] PasswordSalt { get; set; } = new byte[32];
+        public byte[] PasswordHash { get; set; } = new byte[32];
         [ForeignKey("User")]
         public int UserId { get; set; }
         [JsonIgnore]
@@ -21,13 +22,10 @@ namespace readerzone_api.Models
         public bool Active { get; set; } = false;
         public bool Blocked { get; set; } = false;
 
-        public UserAccount(string username, string email, string password, Role role, bool active, bool blocked)
+        public UserAccount(string username, string email, Role role, bool active, bool blocked)
         {
             Username = username;
-            Email = email;
-            var sha = SHA256.Create();
-            var asByteArray = Encoding.Default.GetBytes(password);            
-            Password = Convert.ToBase64String(sha.ComputeHash(asByteArray));            
+            Email = email;            
             Role = role;
             Active = active;
             Blocked = blocked;

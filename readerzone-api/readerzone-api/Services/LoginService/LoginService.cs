@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
 using readerzone_api.Services.EmailService;
+using Microsoft.AspNetCore.Identity;
 
 namespace readerzone_api.Services.LoginService
 {
@@ -33,7 +34,7 @@ namespace readerzone_api.Services.LoginService
         public string Login(string email, string password)
         {
             var userAccount = _readerZoneContext.UserAccounts.Include(ua => ua.User).FirstOrDefault(ua => ua.Email == email);
-            if (userAccount == null || VerifyPassword(password, userAccount.Password))
+            if (userAccount == null || !VerifyPasswordHash(password, userAccount.PasswordHash, userAccount.PasswordSalt))
             {
                 throw new FailedLoginException("Login credentials are incorrect.");
             }
@@ -48,14 +49,18 @@ namespace readerzone_api.Services.LoginService
             return GenerateToken(userAccount);
         }
 
-        public Customer RegisterCustomer(Customer customer)
+        public Customer RegisterCustomer(Customer customer, string password)
         {
             if (!IsEmailTaken(customer))
-            {
+            {                
+                CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+                customer.UserAccount.PasswordSalt = passwordSalt;
+                customer.UserAccount.PasswordHash = passwordHash;
                 _readerZoneContext.Customers.Add(customer);
                 _readerZoneContext.SaveChanges();
-                _emailService.SendActivationEmail(customer.Name, customer.UserAccount.Email, customer.UserAccount.Id);
-                customer.UserAccount.Password = "";
+                _emailService.SendActivationEmail(customer.Name, customer.UserAccount.Email, customer.UserAccount.Id);                
+                customer.UserAccount.PasswordHash = new byte[32];
+                customer.UserAccount.PasswordSalt = new byte[32];
                 return customer;
             }
             else
@@ -77,13 +82,17 @@ namespace readerzone_api.Services.LoginService
             }
         }
 
-        public Employee RegisterEmployee(Employee employee)
+        public Employee RegisterEmployee(Employee employee, string password)
         {
             if (!IsEmailTaken(employee))
             {
+                CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+                employee.UserAccount.PasswordSalt = passwordSalt;
+                employee.UserAccount.PasswordHash = passwordHash;
                 _readerZoneContext.Employees.Add(employee);
-                _readerZoneContext.SaveChanges();
-                employee.UserAccount.Password = "";
+                _readerZoneContext.SaveChanges();                
+                employee.UserAccount.PasswordHash = new byte[32];
+                employee.UserAccount.PasswordSalt = new byte[32];
                 return employee;
             }
             else
@@ -117,10 +126,9 @@ namespace readerzone_api.Services.LoginService
                 DateTimeOffset tokenTime = DateTimeOffset.FromUnixTimeMilliseconds(tokenTimestamp);
                 if (tokenTime > DateTimeOffset.UtcNow)
                 {
-                    var sha = SHA256.Create();
-                    var asByteArray = Encoding.Default.GetBytes(password);
-                    var newPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
-                    userAccount.Password = newPassword;
+                    CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+                    userAccount.PasswordSalt = passwordSalt;
+                    userAccount.PasswordHash = passwordHash;
                     _readerZoneContext.SaveChanges();
                 }
             }
@@ -140,12 +148,18 @@ namespace readerzone_api.Services.LoginService
             return false;
         }
 
-        private static bool VerifyPassword(string password, string correctPassword)
+        public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            var sha = SHA256.Create();
-            var asByteArray = Encoding.Default.GetBytes(password);
-            var p = Convert.ToBase64String(sha.ComputeHash(asByteArray));
-            return correctPassword.Equals(p);            
+            using var hmac = new HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        }
+
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using var hmac = new HMACSHA512(passwordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return computedHash.SequenceEqual(passwordHash);
         }
 
         private string GenerateToken(UserAccount userAccount)

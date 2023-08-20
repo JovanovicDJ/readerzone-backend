@@ -21,7 +21,8 @@ namespace readerzone_api.Services.CustomerService
                                                              .FirstOrDefault(ua => ua.Email == email);
             if (userAccount != null && userAccount.Role.Equals(Role.Customer))
             {
-                userAccount.Password = "";
+                userAccount.PasswordHash = new byte[32];
+                userAccount.PasswordSalt = new byte[32];
                 return (Customer)userAccount.User;
             }
             else

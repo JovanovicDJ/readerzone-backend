@@ -28,14 +28,14 @@ namespace readerzone_api.Controllers
         [HttpPost("register/customer")]
         public ActionResult<Customer> RegisterCustomer(CustomerDto customerDto)
         {
-            var customer = _loginService.RegisterCustomer(new Customer(customerDto));
+            var customer = _loginService.RegisterCustomer(new Customer(customerDto), customerDto.Password);
             return Ok(customer);
         }
 
         [HttpPost("register/employee")]
         public ActionResult<Employee> RegisterEmployee(EmployeeDto employeeDto)
         {
-            var employee = _loginService.RegisterEmployee(new Employee(employeeDto));
+            var employee = _loginService.RegisterEmployee(new Employee(employeeDto), employeeDto.Password);
             return Ok(employee);
         }
 

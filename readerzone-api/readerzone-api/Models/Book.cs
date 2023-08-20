@@ -21,5 +21,7 @@ namespace readerzone_api.Models
         [JsonIgnore]
         public ICollection<PurchasedBook> PurchasedBooks { get; set; } = new List<PurchasedBook>();
         public string ImageUrl { get; set; } = string.Empty;
+        public double AverageRating { get; set; }
+        public int Discount { get; set; } = 0;
     }
 }

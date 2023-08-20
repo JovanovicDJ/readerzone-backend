@@ -6,9 +6,9 @@ namespace readerzone_api.Services.LoginService
     {       
         public string Login(string email, string password);
 
-        public Customer RegisterCustomer(Customer customer);
+        public Customer RegisterCustomer(Customer customer, string password);
 
-        public Employee RegisterEmployee(Employee employee);
+        public Employee RegisterEmployee(Employee employee, string password);
 
         public string ActivateAccount(int id);
 

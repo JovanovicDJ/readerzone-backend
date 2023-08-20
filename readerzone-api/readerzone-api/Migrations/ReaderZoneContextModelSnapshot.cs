@@ -128,6 +128,12 @@ namespace readerzone_api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<double>("AverageRating")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Discount")
+                        .HasColumnType("int");
+
                     b.Property<double>("Height")
                         .HasColumnType("float");
 
@@ -299,6 +305,9 @@ namespace readerzone_api.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<double>("FinalPrice")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BookId");
@@ -367,9 +376,13 @@ namespace readerzone_api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -436,6 +449,9 @@ namespace readerzone_api.Migrations
                     b.HasBaseType("readerzone_api.Models.User");
 
                     b.Property<int>("AnnualChallenge")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AnnualChallengeProgress")
                         .HasColumnType("int");
 
                     b.Property<double>("Points")
