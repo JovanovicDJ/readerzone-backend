@@ -49,8 +49,16 @@ namespace readerzone_api.Controllers
         }
 
         [HttpGet("forgot/password/{email}")]
-        public ActionResult ForgotPassword(string email)
+        public ActionResult ForgottenPassword(string email)
         {
+            _loginService.ForgottenPassword(email);
+            return Ok();
+        }
+
+        [HttpPost("reset/password")]
+        public ActionResult ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            _loginService.ResetPassword(resetPasswordDto.Password, resetPasswordDto.Token);
             return Ok();
         }
     }

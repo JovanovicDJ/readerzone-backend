@@ -28,6 +28,21 @@ namespace readerzone_api.Services.EmailService
             SendEmail(email);
         }
 
+        public void SendForgottenPasswordEmail(string address, int accountId, long token)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(_configuration.GetSection("Email:Username").Value));
+            email.To.Add(MailboxAddress.Parse(address));
+            email.Subject = "ReaderZone - Forgotten password";
+            email.Body = new TextPart(TextFormat.Plain)
+            {
+                Text = $"We have received your request for password change. In order to complete that action go " +
+                       $"to this link: http://localhost:4200/login/resetPassword/{accountId}-{token} . Keep in mind" +
+                       $"that this link is valid for 15 minutes since the time this email has been sent."
+            };
+            SendEmail(email);
+        }
+
         public void SendEmail(MimeMessage email)
         {
             using var smtp = new SmtpClient();
@@ -35,6 +50,6 @@ namespace readerzone_api.Services.EmailService
             smtp.Authenticate(_configuration.GetSection("Email:Username").Value, _configuration.GetSection("Email:Password").Value);
             smtp.Send(email);
             smtp.Disconnect(true);
-        }
+        }        
     }
 }

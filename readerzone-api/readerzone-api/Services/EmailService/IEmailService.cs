@@ -6,5 +6,6 @@ namespace readerzone_api.Services.EmailService
     {
         public void SendEmail(MimeMessage email);
         public void SendActivationEmail(string name, string email, int accountId);
+        public void SendForgottenPasswordEmail(string address, int accountId, long token);
     }
 }

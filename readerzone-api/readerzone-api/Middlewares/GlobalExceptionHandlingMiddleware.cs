@@ -80,6 +80,21 @@ namespace readerzone_api.Middlewares
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(json);
             }
+            catch (NotValidAccountException nvae)
+            {
+                _logger.LogError(nvae, nvae.Message);
+                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                ProblemDetails problem = new()
+                {
+                    Status = (int)HttpStatusCode.Forbidden,
+                    Type = "User account is not valid",
+                    Title = "User account is not valid",
+                    Detail = nvae.Message
+                };
+                var json = JsonSerializer.Serialize(problem);
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(json);
+            }
             catch (Exception e)
             {
                 _logger.LogError(e, e.Message);

@@ -11,5 +11,8 @@ namespace readerzone_api.Services.LoginService
         public Employee RegisterEmployee(Employee employee);
 
         public string ActivateAccount(int id);
+
+        public void ForgottenPassword(string email);
+        public void ResetPassword(string password, string token);
     }
 }

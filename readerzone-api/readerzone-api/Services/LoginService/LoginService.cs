@@ -36,16 +36,16 @@ namespace readerzone_api.Services.LoginService
             if (userAccount == null || VerifyPassword(password, userAccount.Password))
             {
                 throw new FailedLoginException("Login credentials are incorrect.");
-            }           
+            }
             if (userAccount.Blocked)
             {
                 throw new FailedLoginException($"User with email {userAccount.Email} is blocked.");
-            }            
+            }
             if (!userAccount.Active)
             {
                 throw new FailedLoginException($"User with email {userAccount.Email} has not activated his account.");
             }
-            return GenerateToken(userAccount);           
+            return GenerateToken(userAccount);
         }
 
         public Customer RegisterCustomer(Customer customer)
@@ -61,7 +61,7 @@ namespace readerzone_api.Services.LoginService
             else
             {
                 throw new NotCreatedException($"Customer with {customer.UserAccount.Email} email already exists.");
-            }            
+            }
         }
 
         public string ActivateAccount(int id)
@@ -74,7 +74,7 @@ namespace readerzone_api.Services.LoginService
                 userAccount.Active = true;
                 _readerZoneContext.SaveChanges();
                 return "success";
-            }            
+            }
         }
 
         public Employee RegisterEmployee(Employee employee)
@@ -89,7 +89,45 @@ namespace readerzone_api.Services.LoginService
             else
             {
                 throw new NotCreatedException($"Employee with {employee.UserAccount.Email} email already exists.");
-            }                       
+            }
+        }
+
+        public void ForgottenPassword(string email)
+        {
+            var userAccount = _readerZoneContext.UserAccounts.FirstOrDefault(ua => ua.Email == email);
+            if (userAccount == null || userAccount.Blocked || !userAccount.Active)
+            {
+                throw new NotValidAccountException($"User account with email {email} is not valid.");
+            }
+            long token = DateTimeOffset.UtcNow.AddMinutes(15).ToUnixTimeMilliseconds();
+            _emailService.SendForgottenPasswordEmail(email, userAccount.Id, token);
+
+        }
+
+        public void ResetPassword(string password, string token)
+        {
+            string[] tokens = token.Split('-');
+            var userAccount = _readerZoneContext.UserAccounts.FirstOrDefault(ua => ua.Id == Int32.Parse(tokens[0]));
+            if (userAccount == null)
+            {
+                throw new NotFoundException($"User with ID {tokens[0]} is not found.");
+            }
+            if (long.TryParse(tokens[1], out long tokenTimestamp))
+            {
+                DateTimeOffset tokenTime = DateTimeOffset.FromUnixTimeMilliseconds(tokenTimestamp);
+                if (tokenTime > DateTimeOffset.UtcNow)
+                {
+                    var sha = SHA256.Create();
+                    var asByteArray = Encoding.Default.GetBytes(password);
+                    var newPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
+                    userAccount.Password = newPassword;
+                    _readerZoneContext.SaveChanges();
+                }
+            }
+            else
+            {
+                throw new NotFoundException("Reset password token has expired.");
+            }            
         }
 
         private bool IsEmailTaken(User user)
