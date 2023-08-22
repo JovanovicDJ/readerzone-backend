@@ -1,9 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using readerzone_api.Dtos;
+using System.Text.Json.Serialization;
 
 namespace readerzone_api.Models
 {
     public class Book
-    {
+    {        
         public int Id { get; set; }
         public string ISBN { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
@@ -21,7 +22,7 @@ namespace readerzone_api.Models
         [JsonIgnore]
         public ICollection<PurchasedBook> PurchasedBooks { get; set; } = new List<PurchasedBook>();
         public string ImageUrl { get; set; } = string.Empty;
-        public double AverageRating { get; set; }
-        public int Discount { get; set; } = 0;
+        public double AverageRating { get; set; } = 3.5;
+        public int Discount { get; set; } = 0;               
     }
 }

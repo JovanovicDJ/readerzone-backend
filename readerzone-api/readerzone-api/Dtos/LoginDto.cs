@@ -1,8 +1,12 @@
-﻿namespace readerzone_api.Dtos
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace readerzone_api.Dtos
 {
     public class LoginDto
     {
+        [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
+        [Required]
         public string Password { get; set; } = string.Empty;
     }
 }

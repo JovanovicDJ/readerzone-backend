@@ -27,7 +27,7 @@ namespace readerzone_api.Models
 
         public Customer(CustomerDto customerDto)
         {
-            DateTime dob = DateTime.ParseExact(customerDto.Dob, "dd.MM.yyyy.", null, System.Globalization.DateTimeStyles.None);            
+            DateTime dob = DateTime.ParseExact(customerDto.Dob, "dd.MM.yyyy.", null, System.Globalization.DateTimeStyles.None);
             Name = customerDto.Name;
             Surname = customerDto.Surname;
             Dob = dob;
