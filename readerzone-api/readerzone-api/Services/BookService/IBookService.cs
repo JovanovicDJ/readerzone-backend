@@ -6,6 +6,9 @@ namespace readerzone_api.Services.BookService
     public interface IBookService
     {
         public Book AddBook(BookDto bookDto);
+        public List<Book> GetBooks(PaginationQuery paginationQuery, out int totalBooks);
+        public Book GetBook(string isbn);
+        public List<Book> GetRecommendedBooks();
 
     }
 }

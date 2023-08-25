@@ -18,11 +18,32 @@ namespace readerzone_api.Controllers
             _bookService = bookService;
         }
 
+        [HttpGet("{isbn}")]
+        public ActionResult<Book> GetBook(string isbn)
+        {
+            var book = _bookService.GetBook(isbn);
+            return Ok(book);
+        }             
+
         [HttpPost]
         public ActionResult<Book> AddBook(BookDto bookDto)
         {
             var book = _bookService.AddBook(bookDto);
             return Ok(book);
+        }
+
+        [HttpPost("books")]
+        public ActionResult GetBooks(PaginationQuery paginationQuery)
+        {
+            var books = _bookService.GetBooks(paginationQuery, out int totalBooks);
+            return Ok(new { TotalBooks = totalBooks, Books = books });
+        }
+
+        [HttpGet("recommended")]
+        public ActionResult<List<Book>> GetRecommendedBooks()
+        {
+            var books = _bookService.GetRecommendedBooks();
+            return Ok(books);
         }
     }
 }

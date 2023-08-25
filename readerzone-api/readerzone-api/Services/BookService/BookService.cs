@@ -1,10 +1,12 @@
-﻿using readerzone_api.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using readerzone_api.Data;
 using readerzone_api.Dtos;
 using readerzone_api.Exceptions;
 using readerzone_api.Models;
 using readerzone_api.Services.AuthorService;
 using readerzone_api.Services.GenreService;
 using readerzone_api.Services.PublisherService;
+using System.IO.Pipelines;
 
 namespace readerzone_api.Services.BookService
 {
@@ -13,15 +15,27 @@ namespace readerzone_api.Services.BookService
         private readonly ReaderZoneContext _readerZoneContext;
         private readonly IGenreService _genreService;
         private readonly IAuthorService _authorService;
-        private readonly IPublisherService _publisherService;        
+        private readonly IPublisherService _publisherService;
 
-        public BookService(ReaderZoneContext readerZoneContext, IGenreService genreService, 
+        public BookService(ReaderZoneContext readerZoneContext, IGenreService genreService,
                            IAuthorService authorService, IPublisherService publisherService)
         {
             _readerZoneContext = readerZoneContext;
             _genreService = genreService;
             _authorService = authorService;
-            _publisherService = publisherService;            
+            _publisherService = publisherService;
+        }
+
+        public Book GetBook(string isbn)
+        {
+            var book = _readerZoneContext.Books
+                               .Include(b => b.Publisher)
+                               .ThenInclude(p => p.Address)
+                               .Include(b => b.Genres)
+                               .Include(b => b.Authors)
+                               .Where(book => book.ISBN.Equals(isbn))
+                               .FirstOrDefault();
+            return book == null ? throw new NotFoundException($"Book with ISBN {isbn} was not found!") : book;
         }
 
         public Book AddBook(BookDto bookDto)
@@ -52,9 +66,54 @@ namespace readerzone_api.Services.BookService
             } else
             {
                 throw new NotCreatedException($"Book with ISBN {bookDto.ISBN} already exists.");
-            }         
+            }
+        }     
+
+        public List<Book> GetBooks(PaginationQuery pq, out int totalBooks)
+        {
+            int booksToSkip = (pq.PageNumber - 1) * pq.PageSize;
+
+            var query = _readerZoneContext.Books
+                               .Include(b => b.Publisher)
+                               .ThenInclude(p => p.Address)
+                               .Include(b => b.Genres)
+                               .Include(b => b.Authors)
+                               .Where(book =>
+                                     (string.IsNullOrEmpty(pq.SearchKeyword) ||
+                                      book.Title.Contains(pq.SearchKeyword) ||
+                                      book.Authors.Any(author => author.Name.Contains(pq.SearchKeyword) || author.Surname.Contains(pq.SearchKeyword)) ||
+                                      book.Publisher.Name.Contains(pq.SearchKeyword)) &&
+
+                                      (pq.SelectedGenres.Count == 0 ||
+                                      book.Genres.Any(g => pq.SelectedGenres.Contains(g.Name))) &&
+
+                                      (book.Price >= pq.MinPrice && book.Price <= pq.MaxPrice))
+
+                               .OrderByDescending(item => item.Id);                               
+
+            totalBooks = query.Count();
+
+            var booksOnPage = query
+                               .Skip(booksToSkip)
+                               .Take(pq.PageSize)
+                               .ToList();
+
+            return booksOnPage;
         }
-      
+
+        public List<Book> GetRecommendedBooks()
+        {
+            var books = _readerZoneContext.Books
+                               .Include(b => b.Publisher)
+                               .ThenInclude(p => p.Address)
+                               .Include(b => b.Genres)
+                               .Include(b => b.Authors)
+                               .OrderBy(book => Guid.NewGuid())
+                               .Take(5)
+                               .ToList();
+            return books;
+        }
+
         private ICollection<Author> GetAuthorsById(List<int> ids)
         {
             ICollection<Author> authors = new List<Author>();
@@ -74,5 +133,6 @@ namespace readerzone_api.Services.BookService
             }
             return genres;
         }
+        
     }
 }
