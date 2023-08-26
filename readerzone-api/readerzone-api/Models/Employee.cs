@@ -1,4 +1,5 @@
 ﻿using readerzone_api.Dtos;
+using System.Text.Json.Serialization;
 using static readerzone_api.Enums.Enums;
 
 namespace readerzone_api.Models
@@ -6,6 +7,8 @@ namespace readerzone_api.Models
     public class Employee : User
     {        
         public DateTime HireDate { get; set; }
+        [JsonIgnore]
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
         public Employee(string name, string surname, DateTime dob, string phoneNumber) : base(name, surname, dob, phoneNumber)
         {
         }

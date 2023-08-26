@@ -29,5 +29,11 @@
             Unactive,
             Active
         }
+
+        public enum OrderStatus
+        {
+            Pending,
+            Completed            
+        }
     }
 }
