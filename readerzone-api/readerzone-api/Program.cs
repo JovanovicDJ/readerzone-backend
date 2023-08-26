@@ -11,6 +11,7 @@ using readerzone_api.Services.EmailService;
 using readerzone_api.Services.GenreService;
 using readerzone_api.Services.ImageService;
 using readerzone_api.Services.LoginService;
+using readerzone_api.Services.OrderService;
 using readerzone_api.Services.PublisherService;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
@@ -34,6 +35,7 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();

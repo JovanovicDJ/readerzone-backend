@@ -59,12 +59,6 @@ namespace readerzone_api.Data
                 .WithMany(customer => customer.Comments)
                 .HasForeignKey(c => c.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.Employee)
-                .WithMany(e => e.Orders)
-                .HasForeignKey(o => o.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict);
                    
             //modelBuilder.Entity<Review>()
             //    .HasOne(r => r.Customer)

@@ -18,11 +18,7 @@ namespace readerzone_api.Models
         public string PostalCode { get; set; } = string.Empty;        
         public string Country { get; set; } = string.Empty;        
         public double Price { get; set; }
-        public OrderStatus OrderStatus { get; set; }
-        [ForeignKey("Employee")]
-        public int EmployeeId { get; set; }
-        [JsonIgnore]
-        public Employee Employee { get; set; } = null!;
+        public OrderStatus OrderStatus { get; set; }        
         [JsonIgnore]
         public ICollection<Book> Books { get; set; } = new List<Book>();
 

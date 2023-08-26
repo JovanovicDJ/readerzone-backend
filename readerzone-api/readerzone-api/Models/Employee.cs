@@ -7,8 +7,7 @@ namespace readerzone_api.Models
     public class Employee : User
     {        
         public DateTime HireDate { get; set; }
-        [JsonIgnore]
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        
         public Employee(string name, string surname, DateTime dob, string phoneNumber) : base(name, surname, dob, phoneNumber)
         {
         }
