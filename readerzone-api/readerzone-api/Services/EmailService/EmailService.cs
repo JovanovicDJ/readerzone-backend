@@ -1,7 +1,9 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Identity.Client;
 using MimeKit;
 using MimeKit.Text;
+using readerzone_api.Models;
 
 namespace readerzone_api.Services.EmailService
 {
@@ -43,6 +45,35 @@ namespace readerzone_api.Services.EmailService
             SendEmail(email);
         }
 
+        public void SendOrderReceivedEmail(string address, string name, string surname)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(_configuration.GetSection("Email:Username").Value));
+            email.To.Add(MailboxAddress.Parse(address));
+            email.Subject = "ReaderZone - Order received";
+            email.Body = new TextPart(TextFormat.Plain)
+            {
+                Text = $"Dear {name} {surname}, \n We are glad to inform you that your order has been received. " +
+                       $"Hard working people of ReaderZone will immediately start processing your order. " +
+                       $"Soon, you will be informed when your order starts heading your way."
+            };
+            SendEmail(email);
+        }
+
+        public void SendOrderProcessedEmail(string address, string name, string surname)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(_configuration.GetSection("Email:Username").Value));
+            email.To.Add(MailboxAddress.Parse(address));
+            email.Subject = "ReaderZone - Order Processed";
+            email.Body = new TextPart(TextFormat.Plain)
+            {
+                Text = $"Dear {name} {surname}, \n We are glad to inform you that your order has been processed and " +
+                       $"it's heading your way."                       
+            };
+            SendEmail(email);
+        }
+
         public void SendEmail(MimeMessage email)
         {
             using var smtp = new SmtpClient();
@@ -50,6 +81,7 @@ namespace readerzone_api.Services.EmailService
             smtp.Authenticate(_configuration.GetSection("Email:Username").Value, _configuration.GetSection("Email:Password").Value);
             smtp.Send(email);
             smtp.Disconnect(true);
-        }        
+        }
+        
     }
 }

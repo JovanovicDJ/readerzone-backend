@@ -11,5 +11,10 @@ namespace readerzone_api.Models
         {
             Text = text;
         }
+
+        public AutomaticPost()
+        {
+
+        }
     }
 }

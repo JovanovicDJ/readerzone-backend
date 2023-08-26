@@ -13,6 +13,11 @@ namespace readerzone_api.Models
         public Customer Customer { get; set; } = null!;
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
+        public Post()
+        {
+            
+        }
+
         public Post(DateTime postingTime, int likes)
         {
             PostingTime = postingTime;

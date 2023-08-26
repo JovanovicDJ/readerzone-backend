@@ -35,7 +35,7 @@ namespace readerzone_api.Services.CustomerService
 
         public void AddPurchasedBooks(string email, double price, ICollection<Book> books)
         {
-            var customer = GetCustomer(email);
+            var customer = GetCustomerWithPassword(email);
             foreach (var book in books)
             {
                 var purchasedBook = new PurchasedBook()
@@ -51,7 +51,7 @@ namespace readerzone_api.Services.CustomerService
             AddPoints(customer, price);
         }
 
-        private Customer GetCustomer(string email)  // In function GetCustomerByEmail I need to keep password safe, here I don't to that
+        public Customer GetCustomerWithPassword(string email)  // In function GetCustomerByEmail I need to keep password safe, here I don't to that
         {
             var userAccount = _readerZoneContext.UserAccounts.Include(ua => ua.User)
                                                              .ThenInclude(u => u.Address)
