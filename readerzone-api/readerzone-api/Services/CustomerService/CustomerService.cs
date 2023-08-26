@@ -3,6 +3,7 @@ using readerzone_api.Data;
 using readerzone_api.Exceptions;
 using readerzone_api.Models;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using static readerzone_api.Enums.Enums;
 
 namespace readerzone_api.Services.CustomerService
@@ -10,10 +11,12 @@ namespace readerzone_api.Services.CustomerService
     public class CustomerService : ICustomerService
     {
         private readonly ReaderZoneContext _readerZoneContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CustomerService(ReaderZoneContext readerZoneContext)
+        public CustomerService(ReaderZoneContext readerZoneContext, IHttpContextAccessor httpContextAccessor)
         {
             _readerZoneContext = readerZoneContext;
+            _httpContextAccessor = httpContextAccessor;
         }        
 
         public Customer GetCustomerByEmail(string email)
@@ -66,6 +69,33 @@ namespace readerzone_api.Services.CustomerService
             }
         }
 
+        public List<PurchasedBook> GetPurchasedBooksByCustomerId(int customerId, BookStatus status)
+        {            
+            var books = _readerZoneContext.PurchasedBooks.Include(pb => pb.Book)
+                                                         .ThenInclude(b => b.Authors)
+                                                         .Include(pb => pb.Book.Publisher)
+                                                         .Where(pb => pb.CustomerId  == customerId && pb.BookStatus.Equals(status))
+                                                         .ToList();
+            return books;
+        }
+
+        public void UpdatePurchasedBookStatus(int purchasedBookId, BookStatus status)
+        {
+            var result = String.Empty;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            }
+            var customer = GetCustomerWithPassword(result);
+            var book = _readerZoneContext.PurchasedBooks.FirstOrDefault(pb => pb.Id == purchasedBookId && pb.CustomerId == customer.Id);
+            if (book == null)
+            {
+                throw new NotFoundException($"Purchased book with ID {purchasedBookId} was not found.");
+            }
+            book.BookStatus = status;
+            _readerZoneContext.SaveChanges();
+        }
+
         private void AddPoints(Customer customer, double price)
         {
             customer.Points = customer.Points + price;
@@ -86,6 +116,6 @@ namespace readerzone_api.Services.CustomerService
                 customer.Tier = Tier.Platinum;
             }
             _readerZoneContext.SaveChanges();
-        }
+        }        
     }
 }

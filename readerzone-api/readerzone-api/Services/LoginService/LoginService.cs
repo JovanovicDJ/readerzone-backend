@@ -19,15 +19,13 @@ namespace readerzone_api.Services.LoginService
     public class LoginService : ILoginService
     {
         private readonly IConfiguration _configuration;
-        private readonly IEmailService _emailService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEmailService _emailService;        
         private readonly ReaderZoneContext _readerZoneContext;
 
-        public LoginService(IConfiguration configuration, IEmailService emailService, IHttpContextAccessor httpContextAccessor, ReaderZoneContext readerZoneContext)
+        public LoginService(IConfiguration configuration, IEmailService emailService, ReaderZoneContext readerZoneContext)
         {
             _configuration = configuration;
-            _emailService = emailService;
-            _httpContextAccessor = httpContextAccessor;
+            _emailService = emailService;            
             _readerZoneContext = readerZoneContext;
         }
 
