@@ -10,6 +10,7 @@ namespace readerzone_api.Models
         public int Likes { get; set; }
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }
+        //[JsonIgnore]
         public Customer Customer { get; set; } = null!;
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 

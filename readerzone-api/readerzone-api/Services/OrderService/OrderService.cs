@@ -68,8 +68,8 @@ namespace readerzone_api.Services.OrderService
             order.OrderStatus = OrderStatus.Completed;
             _readerZoneContext.SaveChanges();
             _customerService.AddPurchasedBooks(order.Email, order.Price, order.Books);
-            _emailService.SendOrderProcessedEmail(order.Email, order.Name, order.Surname);
-            _postService.GeneratePurchasedBookPost(order.Email, order.Books);
+            _emailService.SendOrderProcessedEmail(order.Email, order.Name, order.Surname);            
+            _postService.GeneratePurchasedBookPost(_customerService.GetCustomerWithPassword(order.Email), order.Books);
         }
 
         private ICollection<Book> GetBooksByIsbn(List<string> isbns)

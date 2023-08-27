@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using readerzone_api.Data;
+using readerzone_api.Dtos;
 using readerzone_api.Models;
 using readerzone_api.Services.CustomerService;
 using static readerzone_api.Enums.Enums;
@@ -40,6 +41,13 @@ namespace readerzone_api.Controllers
         public ActionResult UpdatePurchasedBookStatus(int purchasedBookId, BookStatus newStatus)
         {
             _customerService.UpdatePurchasedBookStatus(purchasedBookId, newStatus);
+            return Ok();
+        }
+
+        [HttpPost("review"), Authorize(Roles = "Customer")]
+        public ActionResult AddReview(ReviewDto reviewDto)
+        {
+            _customerService.AddReview(reviewDto.Title, reviewDto.Text, reviewDto.Rating, reviewDto.PurchasedBookId);
             return Ok();
         }
     }

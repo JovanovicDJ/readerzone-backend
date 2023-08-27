@@ -10,6 +10,6 @@ namespace readerzone_api.Services.CustomerService
         public void AddPurchasedBooks(string email, double price, ICollection<Book> books);
         public List<PurchasedBook> GetPurchasedBooksByCustomerId(int customerId, BookStatus status);
         public void UpdatePurchasedBookStatus(int purchasedBookId, BookStatus status);
-
+        public void AddReview(string title, string text, int rating, int purchasedBookId);
     }
 }

@@ -19,5 +19,10 @@ namespace readerzone_api.Models
             Text = text;
             Rating = rating;
         }
+
+        public Review()
+        {
+
+        }
     }
 }
