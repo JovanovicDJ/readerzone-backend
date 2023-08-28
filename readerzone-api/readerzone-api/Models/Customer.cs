@@ -12,6 +12,7 @@ namespace readerzone_api.Models
         public double Points { get; set; } = 0.0;
         public int AnnualChallenge { get; set; } = 1;
         public int AnnualChallengeProgress { get; set; } = 0;
+        public string ImageUrl { get; set; } = string.Empty;
         [JsonIgnore]
         public ICollection<Customer> Friends { get; set; } = new List<Customer>();
         [JsonIgnore]
@@ -36,7 +37,8 @@ namespace readerzone_api.Models
             Points = 0;
             AnnualChallenge = 0;
             UserAccount = new UserAccount(customerDto.Username, customerDto.Email, Role.Customer, false, false);
-            Address = new Address(customerDto.Street, customerDto.Number, customerDto.City, customerDto.PostalCode, customerDto.Country);           
+            Address = new Address(customerDto.Street, customerDto.Number, customerDto.City, customerDto.PostalCode, customerDto.Country);
+            ImageUrl = "https://i.ibb.co/vcB3cX1/pngegg.png";
         }
     }
 }

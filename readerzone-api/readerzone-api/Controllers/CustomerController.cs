@@ -28,13 +28,27 @@ namespace readerzone_api.Controllers
             return Ok(customer);
         }
 
+        [HttpGet("id/{id}")]
+        public ActionResult<Customer> GetCustomerById(int id)
+        {
+            var customer = _customerService.GetCustomerById(id);
+            return Ok(customer);
+        }
+
         [HttpGet("books/{id}"), Authorize(Roles = "Customer")]
-        public ActionResult GetPurchasedBookByCustomerId(int id)
+        public ActionResult GetPurchasedBooksByCustomerId(int id)
         {
             var wantToReadBooks = _customerService.GetPurchasedBooksByCustomerId(id, BookStatus.WantToRead);
             var readingBooks = _customerService.GetPurchasedBooksByCustomerId(id, BookStatus.Reading);
             var readBooks = _customerService.GetPurchasedBooksByCustomerId(id, BookStatus.Read);
             return Ok(new { WantToRead = wantToReadBooks, Reading = readingBooks, Read = readBooks });
+        }
+
+        [HttpGet("books/data/{id}")]
+        public ActionResult<List<BookData>> GetBooksDataByCustomerId(int id)
+        {
+            var books = _customerService.GetBooksDataByCustomerId(id);
+            return Ok(books);
         }
 
         [HttpPatch("{purchasedBookId}"), Authorize(Roles = "Customer")]
@@ -50,5 +64,13 @@ namespace readerzone_api.Controllers
             _customerService.AddReview(reviewDto.Title, reviewDto.Text, reviewDto.Rating, reviewDto.PurchasedBookId);
             return Ok();
         }
+
+        [HttpPut, Authorize(Roles = "Customer")]
+        public ActionResult UpdateCustomer(UpdateCustomerDto updateCustomerDto)
+        {
+            _customerService.UpdateCustomer(updateCustomerDto);
+            return Ok();
+        }
+
     }
 }

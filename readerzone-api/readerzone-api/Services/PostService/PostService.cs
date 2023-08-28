@@ -84,7 +84,7 @@ namespace readerzone_api.Services.PostService
 
         private void SetNewAverageRating(PurchasedBook purchasedBook)
         {
-            var newAverageRating = 3.5;
+            var newAverageRating = purchasedBook.Book.AverageRating;
             var purchasedBooks = _readerZoneContext.PurchasedBooks
                                                    .Where(pb => pb.Book.Id == purchasedBook.Book.Id && pb.Review != null)
                                                    .ToList();

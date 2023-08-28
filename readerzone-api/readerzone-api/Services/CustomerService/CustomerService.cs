@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using readerzone_api.Data;
+using readerzone_api.Dtos;
 using readerzone_api.Exceptions;
 using readerzone_api.Models;
 using readerzone_api.Services.PostService;
@@ -38,6 +39,23 @@ namespace readerzone_api.Services.CustomerService
             else
             {
                 throw new NotFoundException($"User with email {email} does not exist.");
+            }
+        }
+
+        public Customer GetCustomerById(int id)
+        {
+            var customer = _readerZoneContext.Customers.Include(c => c.UserAccount)
+                                                       .Include(c => c.Address)
+                                                       .FirstOrDefault(c => c.Id == id);
+            if (customer != null)
+            {
+                customer.UserAccount.PasswordSalt = new byte[32];
+                customer.UserAccount.PasswordHash = new byte[32];
+                return customer;
+            }
+            else
+            {
+                throw new NotFoundException($"Customer with ID {id} does not exist");
             }
         }
 
@@ -124,7 +142,7 @@ namespace readerzone_api.Services.CustomerService
 
         private void AddPoints(Customer customer, double price)
         {
-            customer.Points = customer.Points + price;
+            customer.Points = Math.Round(customer.Points + price, 2);
             if (customer.Points >= 0 && customer.Points < 200)
             {
                 customer.Tier = Tier.Bronze;
@@ -142,6 +160,53 @@ namespace readerzone_api.Services.CustomerService
                 customer.Tier = Tier.Platinum;
             }
             _readerZoneContext.SaveChanges();
-        }   
+        }
+
+        public void UpdateCustomer(UpdateCustomerDto updateCustomerDto)
+        {
+            var result = String.Empty;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            }
+            var customer = GetCustomerWithPassword(result);
+            customer.UserAccount.Username = updateCustomerDto.Username;
+            customer.Name = updateCustomerDto.Name;
+            customer.Surname = updateCustomerDto.Surname;
+            customer.PhoneNumber = updateCustomerDto.PhoneNumber;
+            customer.ImageUrl = updateCustomerDto.ImageUrl;
+            customer.Address.Street = updateCustomerDto.Street;
+            customer.Address.Number = updateCustomerDto.Number;
+            customer.Address.City = updateCustomerDto.City;
+            customer.Address.PostalCode = updateCustomerDto.PostalCode;
+            customer.Address.Country = updateCustomerDto.Country;
+            _readerZoneContext.SaveChanges();
+        }
+
+        public List<BookData> GetBooksDataByCustomerId(int id)
+        {
+            List<BookData> smallBooks = new();
+            var books = _readerZoneContext.PurchasedBooks.Include(pb => pb.Book)
+                                                         .ThenInclude(b => b.Authors)                                                                                                                  
+                                                         .Where(pb => pb.CustomerId == id)
+                                                         .ToList();
+            if (books != null)
+            {
+                foreach(var book in books)
+                {
+                    var sb = new BookData()
+                    {
+                        Isbn = book.Book.ISBN,
+                        Title = book.Book.Title,
+                        BookStatus = book.BookStatus,
+                        Author = book.Book.Authors.First().Name + " " + book.Book.Authors.First().Surname,
+                        AuthorId = book.Book.Authors.First().Id,
+                        ImageUrl = book.Book.ImageUrl
+                    };
+                    smallBooks.Add(sb);
+                }
+            }
+            return smallBooks;
+        }
     }
 }
