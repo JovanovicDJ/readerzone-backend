@@ -1,4 +1,5 @@
-﻿using readerzone_api.Models;
+﻿using readerzone_api.Dtos;
+using readerzone_api.Models;
 using static readerzone_api.Enums.Enums;
 
 namespace readerzone_api.Services.PostService
@@ -10,5 +11,7 @@ namespace readerzone_api.Services.PostService
         public void GenerateReview(Customer customer, PurchasedBook book, string title, string text, int rating);
 
         public void GenerateChangedBookStatusPost(Customer customer, PurchasedBook book, BookStatus status);
+
+        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize);
     }
 }

@@ -1,18 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using readerzone_api.Data;
+using readerzone_api.Dtos;
 using readerzone_api.Models;
 using readerzone_api.Services.CustomerService;
+using System.Security.Claims;
 using static readerzone_api.Enums.Enums;
 
 namespace readerzone_api.Services.PostService
 {
     public class PostService : IPostService
     {
-        private readonly ReaderZoneContext _readerZoneContext;        
+        private readonly ReaderZoneContext _readerZoneContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PostService(ReaderZoneContext readerZoneContext)
+        public PostService(ReaderZoneContext readerZoneContext, IHttpContextAccessor httpContextAccessor)
         {
-            _readerZoneContext = readerZoneContext;            
+            _readerZoneContext = readerZoneContext;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public void GenerateReview(Customer customer, PurchasedBook book, string title, string text, int rating)
@@ -35,9 +39,7 @@ namespace readerzone_api.Services.PostService
         public void GeneratePurchasedBookPost(Customer customer, ICollection<Book> books)
         {            
             foreach (var book in books)
-            {
-                //var text = $"{customer.Name} {customer.Surname} (@{customer.UserAccount.Username}) " +
-                //           $"wants to read '{book.Title}' by {book.Authors.First().Name} {book.Authors.First().Surname}.";
+            {                
                 var post = new AutomaticPost()
                 {
                     PostingTime = DateTime.Now,
@@ -104,6 +106,105 @@ namespace readerzone_api.Services.PostService
                 book.AverageRating = newAverageRating;
                 _readerZoneContext.SaveChanges();
             }            
+        }
+
+        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize)
+        {
+            List<PostDto> posts = new();
+            var result = -1;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                result = Int32.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            }
+
+            var automaticPosts = _readerZoneContext.AutomaticPosts
+                                                   .Include(ap => ap.Customer)
+                                                   .ThenInclude(c => c.UserAccount)
+                                                   .Include(ap => ap.Comments)
+                                                   .ThenInclude(c => c.Customer)
+                                                   .ThenInclude(c => c.UserAccount)
+                                                   .Where(post => post.CustomerId == result)
+                                                   .Select(post => new PostDto
+                                                   {
+                                                       Id = post.Id,
+                                                       PostingTime = post.PostingTime,
+                                                       Likes = post.Likes,
+                                                       CustomerId = post.CustomerId,
+                                                       CustomerUsername = post.Customer.UserAccount.Username,
+                                                       CustomerName = post.Customer.Name,
+                                                       CustomerSurname = post.Customer.Surname,
+                                                       CustomerImageUrl = post.Customer.ImageUrl,
+                                                       Type = "Automatic",
+                                                       Text = post.Text,
+                                                       Comments = post.Comments.Select(comment => new CommentDto
+                                                       {
+                                                           Id = comment.Id,
+                                                           PostingTime = comment.PostingTime,
+                                                           Likes = comment.Likes,
+                                                           Text = comment.Text,
+                                                           CustomerId = comment.CustomerId,
+                                                           CustomerUsername = comment.Customer.UserAccount.Username,
+                                                           CustomerName = comment.Customer.Name,
+                                                           CustomerSurname = comment.Customer.Surname,
+                                                           CustomerImageUrl = comment.Customer.ImageUrl
+                                                       }).ToList()
+                                                   })
+                                                   .ToList();
+
+            var reviewPosts = _readerZoneContext.Reviews
+                                                .Include(ap => ap.Customer)
+                                                .ThenInclude(c => c.UserAccount)
+                                                .Include(ap => ap.Comments)
+                                                .ThenInclude(c => c.Customer)
+                                                .ThenInclude(c => c.UserAccount)
+                                                .Include(r => r.PurchasedBook)
+                                                .ThenInclude(pb => pb.Book)
+                                                .ThenInclude(b => b.Authors)
+                                                .Where(post => post.CustomerId == result)
+                                                .Select(post => new PostDto
+                                                {
+                                                    Id = post.Id,
+                                                    PostingTime = post.PostingTime,
+                                                    Likes = post.Likes,
+                                                    CustomerId = post.CustomerId,
+                                                    CustomerUsername = post.Customer.UserAccount.Username,
+                                                    CustomerName = post.Customer.Name,
+                                                    CustomerSurname = post.Customer.Surname,
+                                                    CustomerImageUrl = post.Customer.ImageUrl,
+                                                    Type = "Review",
+                                                    Text = post.Text,
+                                                    Title = post.Title,
+                                                    Rating = post.Rating,
+                                                    PurchasedBookId = post.PurchasedBookId,
+                                                    Isbn = post.PurchasedBook.Book.ISBN,
+                                                    BookTitle = post.PurchasedBook.Book.Title,
+                                                    AuthorId = post.PurchasedBook.Book.Authors.First().Id,
+                                                    AuthorName = post.PurchasedBook.Book.Authors.First().Name,
+                                                    AuthorSurname = post.PurchasedBook.Book.Authors.First().Surname,
+                                                    BookImageUrl = post.PurchasedBook.Book.ImageUrl,
+                                                    Comments = post.Comments.Select(comment => new CommentDto
+                                                    {
+                                                        Id = comment.Id,
+                                                        PostingTime = comment.PostingTime,
+                                                        Likes = comment.Likes,
+                                                        Text = comment.Text,
+                                                        CustomerId = comment.CustomerId,
+                                                        CustomerUsername = comment.Customer.UserAccount.Username,
+                                                        CustomerName = comment.Customer.Name,
+                                                        CustomerSurname = comment.Customer.Surname,
+                                                        CustomerImageUrl = comment.Customer.ImageUrl
+                                                    }).ToList()
+                                                })
+                                                .ToList();
+
+            var combinedPosts = automaticPosts.Concat(reviewPosts)
+                                              .OrderByDescending(post => post.PostingTime)
+                                              .Skip((pageNumber - 1) * pageSize)
+                                              .Take(pageSize)
+                                              .ToList();
+
+            return combinedPosts;
+        
         }
     }
 }

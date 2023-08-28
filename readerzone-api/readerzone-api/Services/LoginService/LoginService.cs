@@ -164,7 +164,7 @@ namespace readerzone_api.Services.LoginService
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, userAccount.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, userAccount.User.Id.ToString()),
                 new Claim(ClaimTypes.Name, userAccount.Username),
                 new Claim(ClaimTypes.Email, userAccount.Email),               
                 new Claim(ClaimTypes.Role, userAccount.Role.ToString())
