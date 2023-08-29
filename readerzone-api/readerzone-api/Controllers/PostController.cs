@@ -18,10 +18,11 @@ namespace readerzone_api.Controllers
         }
 
         [HttpGet, Authorize(Roles = "Customer")]
+        [Produces("application/json")]
         public ActionResult<List<PostDto>> GetPosts(int pageNumber, int pageSize)
         {
-            var posts = _postService.GetCustomerPosts(pageNumber, pageSize);
-            return Ok(posts);
+            var posts = _postService.GetCustomerPosts(pageNumber, pageSize, out int totalPosts);
+            return Ok(new { Posts = posts, TotalPosts = totalPosts });
         }
     }
 }

@@ -108,7 +108,7 @@ namespace readerzone_api.Services.PostService
             }            
         }
 
-        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize)
+        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize, out int totalPosts)
         {
             List<PostDto> posts = new();
             var result = -1;
@@ -197,6 +197,8 @@ namespace readerzone_api.Services.PostService
                                                 })
                                                 .ToList();
 
+            totalPosts = automaticPosts.Concat(reviewPosts).Count();
+            
             var combinedPosts = automaticPosts.Concat(reviewPosts)
                                               .OrderByDescending(post => post.PostingTime)
                                               .Skip((pageNumber - 1) * pageSize)

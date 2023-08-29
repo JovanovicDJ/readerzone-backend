@@ -12,6 +12,6 @@ namespace readerzone_api.Services.PostService
 
         public void GenerateChangedBookStatusPost(Customer customer, PurchasedBook book, BookStatus status);
 
-        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize);
+        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize, out int totalPosts);
     }
 }
