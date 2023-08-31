@@ -259,5 +259,12 @@ namespace readerzone_api.Services.PostService
             };            
             return commentDto;
         }
+
+        public void DeleteComment(int commentId)
+        {
+            var comment = _readerZoneContext.Comments.FirstOrDefault(c => c.Id == commentId);
+            comment.Deleted = true;
+            _readerZoneContext.SaveChanges();
+        }
     }
 }

@@ -32,5 +32,12 @@ namespace readerzone_api.Controllers
             var comment = _postService.CommentPost(commentPostDto.PostId, commentPostDto.Text);
             return Ok(comment);
         }
+
+        [HttpDelete("comment/{commentId}"), Authorize(Roles = "Customer")]
+        public ActionResult DeleteComment(int commentId)
+        {
+            _postService.DeleteComment(commentId);
+            return Ok();
+        }
     }
 }
