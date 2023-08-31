@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using readerzone_api.Data;
 using readerzone_api.Dtos;
+using readerzone_api.Exceptions;
 using readerzone_api.Models;
 using readerzone_api.Services.CustomerService;
 using System.Security.Claims;
+using System.Xml.Linq;
 using static readerzone_api.Enums.Enums;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace readerzone_api.Services.PostService
 {
@@ -136,7 +139,9 @@ namespace readerzone_api.Services.PostService
                                                        CustomerImageUrl = post.Customer.ImageUrl,
                                                        Type = "Automatic",
                                                        Text = post.Text,
-                                                       Comments = post.Comments.Select(comment => new CommentDto
+                                                       Comments = post.Comments
+                                                                      .Where(comment => !comment.Deleted)
+                                                                      .Select(comment => new CommentDto
                                                        {
                                                            Id = comment.Id,
                                                            PostingTime = comment.PostingTime,
@@ -182,7 +187,9 @@ namespace readerzone_api.Services.PostService
                                                     AuthorName = post.PurchasedBook.Book.Authors.First().Name,
                                                     AuthorSurname = post.PurchasedBook.Book.Authors.First().Surname,
                                                     BookImageUrl = post.PurchasedBook.Book.ImageUrl,
-                                                    Comments = post.Comments.Select(comment => new CommentDto
+                                                    Comments = post.Comments
+                                                                   .Where(comment => !comment.Deleted)
+                                                                   .Select(comment => new CommentDto
                                                     {
                                                         Id = comment.Id,
                                                         PostingTime = comment.PostingTime,
@@ -207,6 +214,50 @@ namespace readerzone_api.Services.PostService
 
             return combinedPosts;
         
+        }
+
+        public CommentDto CommentPost(int postId, string text)
+        {            
+            var result = 0;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                result = Int32.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            }
+            var customer = _readerZoneContext.Customers.Include(c => c.UserAccount)                                                       
+                                                       .FirstOrDefault(c => c.Id == result);
+            if (customer == null)
+            {
+                throw new NotFoundException($"Customer with ID {result} could have not commented post with ID {postId}.");
+            }
+            var post = _readerZoneContext.Posts.FirstOrDefault(p => p.Id == postId);
+            if (post == null)
+            {
+                throw new NotFoundException($"Post with ID {postId} was not found.");
+            }
+            var comment = new Comment()
+            {
+                PostingTime = DateTime.Now,
+                Likes = 0,
+                Text = text,
+                Post = post,
+                Customer = customer,
+                Deleted = false
+            };
+            _readerZoneContext.Comments.Add(comment);
+            _readerZoneContext.SaveChanges();
+            var commentDto = new CommentDto()
+            {                            
+                Id = comment.Id,
+                PostingTime = comment.PostingTime,
+                Likes = comment.Likes,
+                Text = comment.Text,
+                CustomerId = customer.Id,
+                CustomerUsername = customer.UserAccount.Username,
+                CustomerName = customer.Name,
+                CustomerSurname = customer.Surname,
+                CustomerImageUrl = customer.ImageUrl
+            };            
+            return commentDto;
         }
     }
 }

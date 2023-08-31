@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using readerzone_api.Dtos;
+using readerzone_api.Models;
 using readerzone_api.Services.PostService;
 
 namespace readerzone_api.Controllers
@@ -17,12 +18,19 @@ namespace readerzone_api.Controllers
             _postService = postService;
         }
 
-        [HttpGet, Authorize(Roles = "Customer")]
         [Produces("application/json")]
+        [HttpGet, Authorize(Roles = "Customer")]
         public ActionResult<List<PostDto>> GetPosts(int pageNumber, int pageSize)
         {
             var posts = _postService.GetCustomerPosts(pageNumber, pageSize, out int totalPosts);
             return Ok(new { Posts = posts, TotalPosts = totalPosts });
+        }
+
+        [HttpPost("comment"), Authorize(Roles = "Customer")]
+        public ActionResult<CommentDto> CommentPost(CommentPostDto commentPostDto)
+        {
+            var comment = _postService.CommentPost(commentPostDto.PostId, commentPostDto.Text);
+            return Ok(comment);
         }
     }
 }

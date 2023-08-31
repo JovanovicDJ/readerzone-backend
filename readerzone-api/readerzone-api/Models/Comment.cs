@@ -15,5 +15,6 @@ namespace readerzone_api.Models
         public int CustomerId { get; set; }
         [JsonIgnore]
         public Customer Customer { get; set; } = null!;
+        public bool Deleted { get; set; } = false;
     }
 }
