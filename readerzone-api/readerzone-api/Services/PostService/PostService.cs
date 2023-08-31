@@ -111,22 +111,16 @@ namespace readerzone_api.Services.PostService
             }            
         }
 
-        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize, out int totalPosts)
+        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize, int customerId, out int totalPosts)
         {
-            List<PostDto> posts = new();
-            var result = -1;
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                result = Int32.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            }
-
+            List<PostDto> posts = new();           
             var automaticPosts = _readerZoneContext.AutomaticPosts
                                                    .Include(ap => ap.Customer)
                                                    .ThenInclude(c => c.UserAccount)
                                                    .Include(ap => ap.Comments)
                                                    .ThenInclude(c => c.Customer)
                                                    .ThenInclude(c => c.UserAccount)
-                                                   .Where(post => post.CustomerId == result)
+                                                   .Where(post => post.CustomerId == customerId)
                                                    .Select(post => new PostDto
                                                    {
                                                        Id = post.Id,
@@ -165,7 +159,7 @@ namespace readerzone_api.Services.PostService
                                                 .Include(r => r.PurchasedBook)
                                                 .ThenInclude(pb => pb.Book)
                                                 .ThenInclude(b => b.Authors)
-                                                .Where(post => post.CustomerId == result)
+                                                .Where(post => post.CustomerId == customerId)
                                                 .Select(post => new PostDto
                                                 {
                                                     Id = post.Id,

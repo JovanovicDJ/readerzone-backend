@@ -8,6 +8,7 @@ using readerzone_api.Services.AuthorService;
 using readerzone_api.Services.BookService;
 using readerzone_api.Services.CustomerService;
 using readerzone_api.Services.EmailService;
+using readerzone_api.Services.FriendService;
 using readerzone_api.Services.GenreService;
 using readerzone_api.Services.ImageService;
 using readerzone_api.Services.LoginService;
@@ -38,6 +39,7 @@ builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
