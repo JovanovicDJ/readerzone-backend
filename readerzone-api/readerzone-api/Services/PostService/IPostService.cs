@@ -12,5 +12,6 @@ namespace readerzone_api.Services.PostService
         public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize, int customerId, out int totalPosts);
         public CommentDto CommentPost(int postId, string text);
         public void DeleteComment(int commentId);
+        public List<PostDto> GetFriendsPosts(int pageNumber, int pageSize, out int totalPosts);
     }
 }

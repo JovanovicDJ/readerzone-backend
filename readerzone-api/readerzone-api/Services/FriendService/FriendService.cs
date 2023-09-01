@@ -27,7 +27,7 @@ namespace readerzone_api.Services.FriendService
                                                             !n.Deleted);
             if (existingNotification != null)
             {
-                throw new NotCreatedException($"Customer with ID {loggedUserId} already sent friend request to customer with ID {customerId}");
+                throw new NotCreatedException("Friendship request already sent.");
             }
             var loggedUser = _readerZoneContext.Customers.Include(c => c.UserAccount).FirstOrDefault(c => c.Id == loggedUserId) ?? throw new NotFoundException($"Customer with ID {loggedUserId} was not found.");
             var notification = new Notification()
@@ -56,8 +56,9 @@ namespace readerzone_api.Services.FriendService
             friend.Friends.Add(customer);
             _readerZoneContext.SaveChanges();
             SendFriendshipAcceptedNotification(customer, friend);
+            DeleteFriendshipRequest(friendId, loggedUserId);
         }
-
+        
         public void DeleteFriend(int friendId)
         {
             var loggedUserId = GetLoggedUserId();
@@ -82,7 +83,27 @@ namespace readerzone_api.Services.FriendService
         public List<Customer> GetFriends()
         {
             var loggedUserId = GetLoggedUserId();
-            var customer = _readerZoneContext.Customers.Include(c => c.Friends).FirstOrDefault(customer => customer.Id == loggedUserId) ?? throw new NotFoundException($"Customer with ID {loggedUserId} was not found!");
+            var customer = _readerZoneContext.Customers.Include(c => c.Friends).ThenInclude(f => f.UserAccount).FirstOrDefault(customer => customer.Id == loggedUserId) ?? throw new NotFoundException($"Customer with ID {loggedUserId} was not found!");
+
+            foreach (var friend in customer.Friends.ToList())
+            {
+                friend.UserAccount.PasswordHash = new byte[32];
+                friend.UserAccount.PasswordSalt = new byte[32];
+            }
+
+            return customer.Friends.ToList();
+        }
+
+        public List<Customer> GetFriendsForCustomer(int customerId)
+        {            
+            var customer = _readerZoneContext.Customers.Include(c => c.Friends).ThenInclude(f => f.UserAccount).FirstOrDefault(customer => customer.Id == customerId) ?? throw new NotFoundException($"Customer with ID {customerId} was not found!");
+
+            foreach (var friend in customer.Friends.ToList())
+            {
+                friend.UserAccount.PasswordHash = new byte[32];
+                friend.UserAccount.PasswordSalt = new byte[32];
+            }
+
             return customer.Friends.ToList();
         }
 
@@ -132,6 +153,20 @@ namespace readerzone_api.Services.FriendService
             };
             _readerZoneContext.Notifications.Add(notification);
             _readerZoneContext.SaveChanges();
-        }        
+        }
+
+        private void DeleteFriendshipRequest(int friendId, int loggedUserId)
+        {
+            var notification = _readerZoneContext.Notifications.FirstOrDefault(n => n.NotificationType == NotificationType.FriendRequest &&
+                                                                                    n.FromCustomerId == friendId &&
+                                                                                    n.CustomerId == loggedUserId);
+            if (notification == null)
+            {
+                throw new NotFoundException($"Notification was not found");
+            }
+            notification.Deleted = true;
+            _readerZoneContext.SaveChanges();
+        }
+
     }
 }

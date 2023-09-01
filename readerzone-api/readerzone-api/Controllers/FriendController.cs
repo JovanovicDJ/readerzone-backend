@@ -52,6 +52,13 @@ namespace readerzone_api.Controllers
             return Ok(friends);
         }
 
+        [HttpGet("{customerId}"), Authorize(Roles = "Customer")]
+        public ActionResult<List<Customer>> GetFriendsForCustomer(int customerId)
+        {
+            var friends = _friendService.GetFriendsForCustomer(customerId);
+            return Ok(friends);
+        }
+
         [HttpDelete("{friendId}"), Authorize(Roles = "Customer")]
         public ActionResult DeleteFriend(int friendId)
         {

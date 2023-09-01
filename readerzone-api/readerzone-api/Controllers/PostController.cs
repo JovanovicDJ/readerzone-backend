@@ -26,6 +26,14 @@ namespace readerzone_api.Controllers
             return Ok(new { Posts = posts, TotalPosts = totalPosts });
         }
 
+        [Produces("application/json")]
+        [HttpGet("friend"), Authorize(Roles = "Customer")]
+        public ActionResult<List<PostDto>> GetFriendsPosts(int pageNumber, int pageSize)
+        {
+            var posts = _postService.GetFriendsPosts(pageNumber, pageSize, out int totalPosts);
+            return Ok(new { Posts = posts, TotalPosts = totalPosts });
+        }
+
         [HttpPost("comment"), Authorize(Roles = "Customer")]
         public ActionResult<CommentDto> CommentPost(CommentPostDto commentPostDto)
         {
