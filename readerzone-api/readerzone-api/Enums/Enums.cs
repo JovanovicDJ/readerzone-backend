@@ -35,5 +35,12 @@
             Pending,
             Completed            
         }
+
+        public enum NotificationType
+        {
+            FriendRequest,
+            FriendshipAccepted,
+            CommentOnPost
+        }
     }
 }

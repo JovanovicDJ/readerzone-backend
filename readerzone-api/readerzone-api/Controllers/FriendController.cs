@@ -24,10 +24,24 @@ namespace readerzone_api.Controllers
             return Ok(customers);
         }
 
+        [HttpGet("request/{customerId}"), Authorize(Roles = "Customer")]
+        public ActionResult SendFriendRequest(int customerId)
+        {
+            _friendService.SendFriendRequest(customerId);
+            return Ok();
+        }
+
         [HttpGet("add/{friendId}"), Authorize(Roles = "Customer")]
         public ActionResult AddFriend(int friendId)
         {
             _friendService.AddFriend(friendId);
+            return Ok();
+        }
+
+        [HttpGet("reject/{notificationId}"), Authorize(Roles = "Customer")]
+        public ActionResult RejectFriendship(int notificationId)
+        {
+            _friendService.RejectFriendship(notificationId);
             return Ok();
         }
 
@@ -36,6 +50,13 @@ namespace readerzone_api.Controllers
         {
             var friends = _friendService.GetFriends();
             return Ok(friends);
+        }
+
+        [HttpDelete("{friendId}"), Authorize(Roles = "Customer")]
+        public ActionResult DeleteFriend(int friendId)
+        {
+            _friendService.DeleteFriend(friendId);
+            return Ok();
         }
     }
 }

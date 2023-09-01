@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using readerzone_api.Data;
 
@@ -11,9 +12,11 @@ using readerzone_api.Data;
 namespace readerzone_api.Migrations
 {
     [DbContext(typeof(ReaderZoneContext))]
-    partial class ReaderZoneContextModelSnapshot : ModelSnapshot
+    [Migration("20230831223034_AddDeletedNotificationColumn")]
+    partial class AddDeletedNotificationColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

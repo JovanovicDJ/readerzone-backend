@@ -7,5 +7,8 @@ namespace readerzone_api.Services.FriendService
         public void AddFriend(int friendId);
         public List<Customer> GetPossibleFrinds(string query);
         public List<Customer> GetFriends();
+        public void SendFriendRequest(int customerId);
+        public void RejectFriendship(int notificationId);
+        public void DeleteFriend(int friendId);
     }
 }

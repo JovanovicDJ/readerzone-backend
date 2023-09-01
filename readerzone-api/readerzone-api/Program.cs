@@ -12,6 +12,7 @@ using readerzone_api.Services.FriendService;
 using readerzone_api.Services.GenreService;
 using readerzone_api.Services.ImageService;
 using readerzone_api.Services.LoginService;
+using readerzone_api.Services.NotificationService;
 using readerzone_api.Services.OrderService;
 using readerzone_api.Services.PostService;
 using readerzone_api.Services.PublisherService;
@@ -40,6 +41,7 @@ builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IFriendService, FriendService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
