@@ -24,6 +24,7 @@ namespace readerzone_api.Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -59,7 +60,13 @@ namespace readerzone_api.Data
                 .WithMany(customer => customer.Comments)
                 .HasForeignKey(c => c.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
-                   
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.ToCustomer)
+                .WithMany(customer => customer.Notifications)
+                .HasForeignKey(n => n.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             //modelBuilder.Entity<Review>()
             //    .HasOne(r => r.Customer)
             //    .WithMany(c => c.Reviews)

@@ -21,6 +21,8 @@ namespace readerzone_api.Models
         public ICollection<Post> Posts { get; set; } = new List<Post>();
         [JsonIgnore]
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        [JsonIgnore]
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
         public Customer(string name, string surname, DateTime dob, string phoneNumber) : base(name, surname, dob, phoneNumber)
         {

@@ -20,9 +20,17 @@ namespace readerzone_api.Controllers
 
         [Produces("application/json")]
         [HttpGet, Authorize(Roles = "Customer")]
-        public ActionResult<List<PostDto>> GetPosts(int pageNumber, int pageSize)
+        public ActionResult<List<PostDto>> GetPosts(int pageNumber, int pageSize, int customerId)
         {
-            var posts = _postService.GetCustomerPosts(pageNumber, pageSize, out int totalPosts);
+            var posts = _postService.GetCustomerPosts(pageNumber, pageSize, customerId, out int totalPosts);
+            return Ok(new { Posts = posts, TotalPosts = totalPosts });
+        }
+
+        [Produces("application/json")]
+        [HttpGet("friend"), Authorize(Roles = "Customer")]
+        public ActionResult<List<PostDto>> GetFriendsPosts(int pageNumber, int pageSize)
+        {
+            var posts = _postService.GetFriendsPosts(pageNumber, pageSize, out int totalPosts);
             return Ok(new { Posts = posts, TotalPosts = totalPosts });
         }
 

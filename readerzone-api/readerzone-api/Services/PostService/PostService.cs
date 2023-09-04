@@ -111,22 +111,16 @@ namespace readerzone_api.Services.PostService
             }            
         }
 
-        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize, out int totalPosts)
+        public List<PostDto> GetCustomerPosts(int pageNumber, int pageSize, int customerId, out int totalPosts)
         {
-            List<PostDto> posts = new();
-            var result = -1;
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                result = Int32.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            }
-
+            List<PostDto> posts = new();           
             var automaticPosts = _readerZoneContext.AutomaticPosts
                                                    .Include(ap => ap.Customer)
                                                    .ThenInclude(c => c.UserAccount)
                                                    .Include(ap => ap.Comments)
                                                    .ThenInclude(c => c.Customer)
                                                    .ThenInclude(c => c.UserAccount)
-                                                   .Where(post => post.CustomerId == result)
+                                                   .Where(post => post.CustomerId == customerId)
                                                    .Select(post => new PostDto
                                                    {
                                                        Id = post.Id,
@@ -165,7 +159,7 @@ namespace readerzone_api.Services.PostService
                                                 .Include(r => r.PurchasedBook)
                                                 .ThenInclude(pb => pb.Book)
                                                 .ThenInclude(b => b.Authors)
-                                                .Where(post => post.CustomerId == result)
+                                                .Where(post => post.CustomerId == customerId)
                                                 .Select(post => new PostDto
                                                 {
                                                     Id = post.Id,
@@ -212,22 +206,106 @@ namespace readerzone_api.Services.PostService
                                               .Take(pageSize)
                                               .ToList();
 
-            return combinedPosts;
-        
+            return combinedPosts;        
         }
 
+        public List<PostDto> GetFriendsPosts(int pageNumber, int pageSize, out int totalPosts)
+        {
+            var friendIds = GetFriendsIds(GetLoggedUserId());
+            List<PostDto> posts = new();
+            var automaticPosts = _readerZoneContext.AutomaticPosts.Include(ap => ap.Customer).ThenInclude(c => c.UserAccount)
+                                                   .Include(ap => ap.Comments).ThenInclude(c => c.Customer).ThenInclude(c => c.UserAccount)
+                                                   .Where(post => friendIds.Contains(post.CustomerId))
+                                                   .Select(post => new PostDto
+                                                   {
+                                                       Id = post.Id,
+                                                       PostingTime = post.PostingTime,
+                                                       Likes = post.Likes,
+                                                       CustomerId = post.CustomerId,
+                                                       CustomerUsername = post.Customer.UserAccount.Username,
+                                                       CustomerName = post.Customer.Name,
+                                                       CustomerSurname = post.Customer.Surname,
+                                                       CustomerImageUrl = post.Customer.ImageUrl,
+                                                       Type = "Automatic",
+                                                       Text = post.Text,
+                                                       Comments = post.Comments
+                                                                      .Where(comment => !comment.Deleted)
+                                                                      .Select(comment => new CommentDto
+                                                                      {
+                                                                          Id = comment.Id,
+                                                                          PostingTime = comment.PostingTime,
+                                                                          Likes = comment.Likes,
+                                                                          Text = comment.Text,
+                                                                          CustomerId = comment.CustomerId,
+                                                                          CustomerUsername = comment.Customer.UserAccount.Username,
+                                                                          CustomerName = comment.Customer.Name,
+                                                                          CustomerSurname = comment.Customer.Surname,
+                                                                          CustomerImageUrl = comment.Customer.ImageUrl
+                                                                      }).ToList()
+                                                   })
+                                                   .ToList();
+
+            var reviewPosts = _readerZoneContext.Reviews.Include(ap => ap.Customer).ThenInclude(c => c.UserAccount)
+                                                .Include(ap => ap.Comments).ThenInclude(c => c.Customer).ThenInclude(c => c.UserAccount)
+                                                .Include(r => r.PurchasedBook).ThenInclude(pb => pb.Book).ThenInclude(b => b.Authors)
+                                                .Where(post => friendIds.Contains(post.CustomerId))
+                                                .Select(post => new PostDto
+                                                {
+                                                    Id = post.Id,
+                                                    PostingTime = post.PostingTime,
+                                                    Likes = post.Likes,
+                                                    CustomerId = post.CustomerId,
+                                                    CustomerUsername = post.Customer.UserAccount.Username,
+                                                    CustomerName = post.Customer.Name,
+                                                    CustomerSurname = post.Customer.Surname,
+                                                    CustomerImageUrl = post.Customer.ImageUrl,
+                                                    Type = "Review",
+                                                    Text = post.Text,
+                                                    Title = post.Title,
+                                                    Rating = post.Rating,
+                                                    PurchasedBookId = post.PurchasedBookId,
+                                                    Isbn = post.PurchasedBook.Book.ISBN,
+                                                    BookTitle = post.PurchasedBook.Book.Title,
+                                                    AuthorId = post.PurchasedBook.Book.Authors.First().Id,
+                                                    AuthorName = post.PurchasedBook.Book.Authors.First().Name,
+                                                    AuthorSurname = post.PurchasedBook.Book.Authors.First().Surname,
+                                                    BookImageUrl = post.PurchasedBook.Book.ImageUrl,
+                                                    Comments = post.Comments
+                                                                   .Where(comment => !comment.Deleted)
+                                                                   .Select(comment => new CommentDto
+                                                                   {
+                                                                       Id = comment.Id,
+                                                                       PostingTime = comment.PostingTime,
+                                                                       Likes = comment.Likes,
+                                                                       Text = comment.Text,
+                                                                       CustomerId = comment.CustomerId,
+                                                                       CustomerUsername = comment.Customer.UserAccount.Username,
+                                                                       CustomerName = comment.Customer.Name,
+                                                                       CustomerSurname = comment.Customer.Surname,
+                                                                       CustomerImageUrl = comment.Customer.ImageUrl
+                                                                   }).ToList()
+                                                })
+                                                .ToList();
+
+            totalPosts = automaticPosts.Concat(reviewPosts).Count();
+
+            var combinedPosts = automaticPosts.Concat(reviewPosts)
+                                              .OrderByDescending(post => post.PostingTime)
+                                              .Skip((pageNumber - 1) * pageSize)
+                                              .Take(pageSize)
+                                              .ToList();
+
+            return combinedPosts;
+        }        
+
         public CommentDto CommentPost(int postId, string text)
-        {            
-            var result = 0;
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                result = Int32.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            }
+        {
+            var loggedUserId = GetLoggedUserId();
             var customer = _readerZoneContext.Customers.Include(c => c.UserAccount)                                                       
-                                                       .FirstOrDefault(c => c.Id == result);
+                                                       .FirstOrDefault(c => c.Id == loggedUserId);
             if (customer == null)
             {
-                throw new NotFoundException($"Customer with ID {result} could have not commented post with ID {postId}.");
+                throw new NotFoundException($"Customer with ID {loggedUserId} could have not commented post with ID {postId}.");
             }
             var post = _readerZoneContext.Posts.FirstOrDefault(p => p.Id == postId);
             if (post == null)
@@ -263,8 +341,33 @@ namespace readerzone_api.Services.PostService
         public void DeleteComment(int commentId)
         {
             var comment = _readerZoneContext.Comments.FirstOrDefault(c => c.Id == commentId);
+            if (comment == null)
+            {
+                throw new NotFoundException($"Comment with ID {comment} was not found.");
+            }
             comment.Deleted = true;
             _readerZoneContext.SaveChanges();
+        }
+
+        private int GetLoggedUserId()
+        {
+            var result = 0;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                result = Int32.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            }
+            return result;
+        }
+
+        private List<int> GetFriendsIds(int customerId)
+        {
+            var friendIds = new List<int>();
+            var customer = _readerZoneContext.Customers.Include(c => c.Friends).FirstOrDefault(customer => customer.Id == customerId) ?? throw new NotFoundException($"Customer with ID {customerId} was not found!");
+            foreach (var friend in customer.Friends)
+            {
+                friendIds.Add(friend.Id);
+            }
+            return friendIds;
         }
     }
 }
