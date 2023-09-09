@@ -20,7 +20,7 @@ namespace readerzone_api.Models
             Dob = dob;
             PhoneNumber = employeeDto.PhoneNumber;
             HireDate = DateTime.Now;
-            UserAccount = new UserAccount(employeeDto.Username, employeeDto.Email, Enum.Parse<Role>(employeeDto.Role), false, false);
+            UserAccount = new UserAccount(employeeDto.Username, employeeDto.Email, Enum.Parse<Role>(employeeDto.Role), true, false);
             Address = new Address(employeeDto.Street, employeeDto.Number, employeeDto.City, employeeDto.PostalCode, employeeDto.Country);
         }
     }
