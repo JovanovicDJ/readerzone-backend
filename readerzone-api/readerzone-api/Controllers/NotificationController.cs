@@ -24,7 +24,5 @@ namespace readerzone_api.Controllers
             var notifications = _notificationService.GetNotifications(pageNumber, pageSize, out int totalNotification);
             return Ok(new { Notifications = notifications, TotalNotifications = totalNotification });
         }
-
-
     }
 }

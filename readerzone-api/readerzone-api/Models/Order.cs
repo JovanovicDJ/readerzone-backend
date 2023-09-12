@@ -19,7 +19,6 @@ namespace readerzone_api.Models
         public string Country { get; set; } = string.Empty;        
         public double Price { get; set; }
         public OrderStatus OrderStatus { get; set; }        
-        [JsonIgnore]
         public ICollection<Book> Books { get; set; } = new List<Book>();
 
     }

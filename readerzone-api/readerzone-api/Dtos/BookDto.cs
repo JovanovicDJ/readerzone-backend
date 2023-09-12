@@ -32,5 +32,6 @@ namespace readerzone_api.Dtos
         public int PublisherId { get; set; }
         [Required]
         public string ImageUrl { get; set; } = string.Empty;
+        public int Discount { get; set; }
     }
 }

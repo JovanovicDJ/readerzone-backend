@@ -67,7 +67,38 @@ namespace readerzone_api.Services.BookService
             {
                 throw new NotCreatedException($"Book with ISBN {bookDto.ISBN} already exists.");
             }
-        }     
+        }
+
+        public void UpdateBook(BookDto bookDto)
+        {
+            var book = _readerZoneContext.Books.Include(b => b.Authors).Include(b => b.Genres).FirstOrDefault(b => b.ISBN == bookDto.ISBN);
+            if (book != null)
+            {
+                book.Authors.Clear();
+                book.Genres.Clear();
+                _readerZoneContext.SaveChanges();
+                book.ISBN = bookDto.ISBN;
+                book.Title = bookDto.Title;
+                book.PublishingDate = DateTime.ParseExact(bookDto.PublishingDate, "dd.MM.yyyy.", null, System.Globalization.DateTimeStyles.None);
+                book.Stocks = bookDto.Stocks;
+                book.Pages = bookDto.Pages;
+                book.Language = bookDto.Language;
+                book.Weight = bookDto.Weight;
+                book.Height = bookDto.Height;
+                book.Width = bookDto.Width;
+                book.Price = bookDto.Price;
+                book.ImageUrl = bookDto.ImageUrl;
+                book.Genres = GetGenresByName(bookDto.Genres);
+                book.Authors = GetAuthorsById(bookDto.AuthorIds);
+                book.Publisher = _publisherService.GetPublisherById(bookDto.PublisherId);
+                book.Discount = bookDto.Discount;                                
+                _readerZoneContext.SaveChanges();                
+            }
+            else
+            {
+                throw new NotFoundException($"Book with ISBN {bookDto.ISBN} was not found.");
+            }
+        }
 
         public List<Book> GetBooks(PaginationQuery pq, out int totalBooks)
         {
@@ -132,7 +163,6 @@ namespace readerzone_api.Services.BookService
                 genres.Add(_genreService.GetGenreByName(name));
             }
             return genres;
-        }
-        
+        }        
     }
 }

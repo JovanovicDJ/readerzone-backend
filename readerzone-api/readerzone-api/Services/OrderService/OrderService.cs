@@ -72,6 +72,21 @@ namespace readerzone_api.Services.OrderService
             _postService.GeneratePurchasedBookPost(_customerService.GetCustomerWithPassword(order.Email), order.Books);
         }
 
+        public List<Order> GetPendingOrders(int pageNumber, int pageSize, out int totalOrders)
+        {
+            var orders = _readerZoneContext.Orders
+                               .Include(o => o.Books)
+                               .ThenInclude(b => b.Authors)
+                               .Where(o => o.OrderStatus.Equals(OrderStatus.Pending))
+                               .ToList();
+            totalOrders = orders.Count;            
+            var ordersPage = orders.OrderBy(o => o.Id)
+                                   .Skip((pageNumber - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ToList();            
+            return orders;
+        }
+
         private ICollection<Book> GetBooksByIsbn(List<string> isbns)
         {
             ICollection<Book> books = new List<Book>();

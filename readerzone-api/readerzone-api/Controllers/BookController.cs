@@ -45,5 +45,12 @@ namespace readerzone_api.Controllers
             var books = _bookService.GetRecommendedBooks();
             return Ok(books);
         }
+
+        [HttpPut, Authorize(Roles = "Admin, Manager")]
+        public ActionResult UpdateBook(BookDto bookDto)
+        {
+            _bookService.UpdateBook(bookDto);
+            return Ok();
+        }
     }
 }
