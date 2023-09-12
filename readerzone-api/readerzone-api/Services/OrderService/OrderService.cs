@@ -67,9 +67,12 @@ namespace readerzone_api.Services.OrderService
 
             order.OrderStatus = OrderStatus.Completed;
             _readerZoneContext.SaveChanges();
-            _customerService.AddPurchasedBooks(order.Email, order.Price, order.Books);
-            _emailService.SendOrderProcessedEmail(order.Email, order.Name, order.Surname);            
-            _postService.GeneratePurchasedBookPost(_customerService.GetCustomerWithPassword(order.Email), order.Books);
+            if (DoesUserExist(order.Email))
+            {
+                _customerService.AddPurchasedBooks(order.Email, order.Price, order.Books);
+                _emailService.SendOrderProcessedEmail(order.Email, order.Name, order.Surname);
+                _postService.GeneratePurchasedBookPost(_customerService.GetCustomerWithPassword(order.Email), order.Books);
+            }            
         }
 
         public List<Order> GetPendingOrders(int pageNumber, int pageSize, out int totalOrders)
@@ -85,6 +88,16 @@ namespace readerzone_api.Services.OrderService
                                    .Take(pageSize)
                                    .ToList();            
             return orders;
+        }
+
+        private bool DoesUserExist(string email)
+        {
+            var userAccount = _readerZoneContext.UserAccounts.FirstOrDefault(ua => ua.Email == email);
+            if (userAccount == null)
+            {
+                return false;
+            }
+            return true;
         }
 
         private ICollection<Book> GetBooksByIsbn(List<string> isbns)
