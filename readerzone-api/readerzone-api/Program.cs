@@ -17,12 +17,19 @@ using readerzone_api.Services.NotificationService;
 using readerzone_api.Services.OrderService;
 using readerzone_api.Services.PostService;
 using readerzone_api.Services.PublisherService;
+using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//var logger = new LoggerConfiguration()
+//    .ReadFrom.Configuration(builder.Configuration)
+//    .Enrich.FromLogContext()
+//    .CreateLogger();
+//builder.Logging.ClearProviders();
+//builder.Logging.AddSerilog(logger);
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
@@ -77,6 +84,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -85,6 +95,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

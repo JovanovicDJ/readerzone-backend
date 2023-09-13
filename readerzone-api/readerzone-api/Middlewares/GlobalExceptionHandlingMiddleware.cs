@@ -52,7 +52,7 @@ namespace readerzone_api.Middlewares
             }
             catch (NotUpdatedException nue)
             {
-                _logger.LogError(nue, nue.Message);
+                _logger.LogError(nue, nue.Message);                
                 context.Response.StatusCode = (int)HttpStatusCode.Conflict;
                 ProblemDetails problem = new()
                 {

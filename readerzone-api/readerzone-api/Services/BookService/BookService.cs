@@ -119,7 +119,7 @@ namespace readerzone_api.Services.BookService
                                       book.Genres.Any(g => pq.SelectedGenres.Contains(g.Name))) &&
 
                                       (book.Price >= pq.MinPrice && book.Price <= pq.MaxPrice))
-
+                               .AsSplitQuery()
                                .OrderByDescending(item => item.Id);                               
 
             totalBooks = query.Count();
