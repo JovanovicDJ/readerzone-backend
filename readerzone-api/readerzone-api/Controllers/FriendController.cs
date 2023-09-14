@@ -18,9 +18,9 @@ namespace readerzone_api.Controllers
         }
 
         [HttpGet("search"), Authorize(Roles = "Customer")]
-        public ActionResult<List<Customer>> GetPossibleFriends(string query)
+        public ActionResult<List<Customer>> FriendSearch(string query)
         {
-            var customers = _friendService.GetPossibleFrinds(query);
+            var customers = _friendService.FriendSearch(query);
             return Ok(customers);
         }
 

@@ -19,7 +19,7 @@ namespace readerzone_api.Controllers
 
         [Produces("application/json")]
         [HttpGet, Authorize(Roles = "Customer")]
-        public ActionResult<List<PostDto>> GetPosts(int pageNumber, int pageSize)
+        public ActionResult<List<PostDto>> GetNotifications(int pageNumber, int pageSize)
         {
             var notifications = _notificationService.GetNotifications(pageNumber, pageSize, out int totalNotification);
             return Ok(new { Notifications = notifications, TotalNotifications = totalNotification });

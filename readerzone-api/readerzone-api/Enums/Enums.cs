@@ -24,12 +24,6 @@
             Platinum
         }
 
-        public enum Status
-        {
-            Unactive,
-            Active
-        }
-
         public enum OrderStatus
         {
             Pending,

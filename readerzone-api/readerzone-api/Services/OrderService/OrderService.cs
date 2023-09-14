@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto;
 using readerzone_api.Data;
 using readerzone_api.Dtos;
 using readerzone_api.Exceptions;

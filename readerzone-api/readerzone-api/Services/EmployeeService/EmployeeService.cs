@@ -8,13 +8,11 @@ namespace readerzone_api.Services.EmployeeService
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly ReaderZoneContext _readerZoneContext;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ReaderZoneContext _readerZoneContext;        
 
-        public EmployeeService(ReaderZoneContext readerZoneContext, IHttpContextAccessor httpContextAccessor)
+        public EmployeeService(ReaderZoneContext readerZoneContext)
         {
-            _readerZoneContext = readerZoneContext;
-            _httpContextAccessor = httpContextAccessor;
+            _readerZoneContext = readerZoneContext;            
         }
 
         public Employee GetEmployeeByEmail(string email)

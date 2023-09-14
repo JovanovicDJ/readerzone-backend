@@ -14,8 +14,7 @@ namespace readerzone_api.Models
         public int CustomerId { get; set; }
         [JsonIgnore]
         public Customer Customer { get; set; } = null!;
-        public Review Review { get; set; } = null!;
-        public double FinalPrice { get; set; }
+        public Review Review { get; set; } = null!;        
 
     }
 }

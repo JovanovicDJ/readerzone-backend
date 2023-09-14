@@ -1,18 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.SqlServer.Server;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using readerzone_api.Data;
 using readerzone_api.Models;
-using static readerzone_api.Enums.Enums;
 using readerzone_api.Exceptions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
 using readerzone_api.Services.EmailService;
-using Microsoft.AspNetCore.Identity;
 
 namespace readerzone_api.Services.LoginService
 {

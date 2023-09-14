@@ -6,8 +6,7 @@ namespace readerzone_api.Models
     public abstract class Post
     {
         public int Id { get; set; }
-        public DateTime PostingTime { get; set; }
-        public int Likes { get; set; }
+        public DateTime PostingTime { get; set; }        
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }
         [JsonIgnore]
@@ -19,10 +18,9 @@ namespace readerzone_api.Models
             
         }
 
-        public Post(DateTime postingTime, int likes)
+        public Post(DateTime postingTime)
         {
-            PostingTime = postingTime;
-            Likes = likes;
+            PostingTime = postingTime;            
         }
     }
 }

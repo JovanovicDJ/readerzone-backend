@@ -3,8 +3,7 @@
     public class CommentDto
     {
         public int Id { get; set; }
-        public DateTime PostingTime { get; set; }
-        public int Likes { get; set; }
+        public DateTime PostingTime { get; set; }        
         public string Text { get; set; } = string.Empty;
         public int CustomerId { get; set; }
         public string CustomerUsername { get; set; } = string.Empty;

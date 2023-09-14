@@ -6,7 +6,6 @@ using readerzone_api.Models;
 using readerzone_api.Services.AuthorService;
 using readerzone_api.Services.GenreService;
 using readerzone_api.Services.PublisherService;
-using System.IO.Pipelines;
 
 namespace readerzone_api.Services.BookService
 {

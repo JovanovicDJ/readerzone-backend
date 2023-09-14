@@ -3,8 +3,7 @@
     public class PostDto
     {
         public int Id { get; set; }
-        public DateTime PostingTime { get; set; }
-        public int Likes { get; set; }
+        public DateTime PostingTime { get; set; }        
         public int CustomerId { get; set; }
         public string CustomerUsername { get; set; } = string.Empty;
         public string CustomerName { get; set; } = string.Empty;

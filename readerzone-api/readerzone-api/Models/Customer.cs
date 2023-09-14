@@ -1,6 +1,4 @@
-﻿using readerzone_api.Data;
-using readerzone_api.Dtos;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using readerzone_api.Dtos;
 using System.Text.Json.Serialization;
 using static readerzone_api.Enums.Enums;
 
@@ -10,8 +8,6 @@ namespace readerzone_api.Models
     {
         public Tier Tier { get; set; }
         public double Points { get; set; } = 0.0;
-        public int AnnualChallenge { get; set; } = 1;
-        public int AnnualChallengeProgress { get; set; } = 0;
         public string ImageUrl { get; set; } = string.Empty;
         [JsonIgnore]
         public ICollection<Customer> Friends { get; set; } = new List<Customer>();
@@ -36,8 +32,7 @@ namespace readerzone_api.Models
             Dob = dob;
             PhoneNumber = customerDto.PhoneNumber;
             Tier = Tier.Bronze;
-            Points = 0;
-            AnnualChallenge = 0;
+            Points = 0;            
             UserAccount = new UserAccount(customerDto.Username, customerDto.Email, Role.Customer, false, false);
             Address = new Address(customerDto.Street, customerDto.Number, customerDto.City, customerDto.PostalCode, customerDto.Country);
             ImageUrl = "https://i.ibb.co/vcB3cX1/pngegg.png";

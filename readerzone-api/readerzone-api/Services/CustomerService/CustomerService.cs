@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using readerzone_api.Data;
 using readerzone_api.Dtos;
 using readerzone_api.Exceptions;
 using readerzone_api.Models;
 using readerzone_api.Services.PostService;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using static readerzone_api.Enums.Enums;
 
@@ -68,8 +66,7 @@ namespace readerzone_api.Services.CustomerService
                 {
                     BookStatus = BookStatus.WantToRead,
                     Book = book,
-                    Customer = customer,
-                    FinalPrice = price
+                    Customer = customer                    
                 };
                 _readerZoneContext.PurchasedBooks.Add(purchasedBook);
                 _readerZoneContext.SaveChanges();
@@ -77,7 +74,7 @@ namespace readerzone_api.Services.CustomerService
             AddPoints(customer, price);
         }
 
-        public Customer GetCustomerWithPassword(string email)  // In function GetCustomerByEmail I need to keep password safe, here I don't to that
+        public Customer GetCustomerWithPassword(string email)  // In function GetCustomerByEmail I need to keep password safe, here I don't do that
         {
             var userAccount = _readerZoneContext.UserAccounts.Include(ua => ua.User)
                                                              .ThenInclude(u => u.Address)

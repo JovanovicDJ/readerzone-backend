@@ -65,30 +65,7 @@ namespace readerzone_api.Data
                 .HasOne(n => n.ToCustomer)
                 .WithMany(customer => customer.Notifications)
                 .HasForeignKey(n => n.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            //modelBuilder.Entity<Review>()
-            //    .HasOne(r => r.Customer)
-            //    .WithMany(c => c.Reviews)
-            //    .HasForeignKey(r => r.CustomerId)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
-            //modelBuilder.Entity<Comment>()
-            //    .HasOne(com => com.Customer)
-            //    .WithMany(c => c.Comments)
-            //    .HasForeignKey(com => com.CustomerId)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
-            //modelBuilder.Entity<AutomaticPost>()
-            //    .HasOne(a => a.Customer)
-            //    .WithMany(c => c.AutomaticPosts)
-            //    .HasForeignKey(a => a.CustomerId)
-            //    .OnDelete(DeleteBehavior.Restrict);                      
-
-            //modelBuilder.Entity<ReadersClub>()
-            //    .HasMany(rc => rc.Members)
-            //    .WithOne()
-            //    .HasForeignKey(c => c.ReadersClubId);         
+                .OnDelete(DeleteBehavior.Restrict);     
 
             base.OnModelCreating(modelBuilder);
         }

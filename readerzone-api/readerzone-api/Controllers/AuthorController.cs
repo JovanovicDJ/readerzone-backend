@@ -21,8 +21,8 @@ namespace readerzone_api.Controllers
         [HttpGet, Authorize(Roles = "Admin, Manager")]
         public ActionResult<List<Author>> GetAuthors()
         {
-            var authros = _authorService.GetAuthors();
-            return Ok(authros);
+            var authors = _authorService.GetAuthors();
+            return Ok(authors);
         }
 
         [HttpPost, Authorize(Roles = "Admin, Manager")]

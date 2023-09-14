@@ -25,7 +25,7 @@ namespace readerzone_api.Controllers
             return Ok(book);
         }             
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin, Manager")]
         public ActionResult<Book> AddBook(BookDto bookDto)
         {
             var book = _bookService.AddBook(bookDto);

@@ -3,11 +3,8 @@ using readerzone_api.Data;
 using readerzone_api.Dtos;
 using readerzone_api.Exceptions;
 using readerzone_api.Models;
-using readerzone_api.Services.CustomerService;
 using System.Security.Claims;
-using System.Xml.Linq;
 using static readerzone_api.Enums.Enums;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace readerzone_api.Services.PostService
 {
@@ -26,8 +23,7 @@ namespace readerzone_api.Services.PostService
         {
             var review = new Review()
             {
-                PostingTime = DateTime.Now,
-                Likes = 0,
+                PostingTime = DateTime.Now,                
                 Customer = customer,
                 Text = text,
                 Title = title,
@@ -45,8 +41,7 @@ namespace readerzone_api.Services.PostService
             {                
                 var post = new AutomaticPost()
                 {
-                    PostingTime = DateTime.Now,
-                    Likes = 0,
+                    PostingTime = DateTime.Now,                    
                     Customer = customer,
                     Text = GetPostText(BookStatus.WantToRead, customer, book.Title, book.Authors)
                 };
@@ -59,8 +54,7 @@ namespace readerzone_api.Services.PostService
         {
             var post = new AutomaticPost()
             {
-                PostingTime = DateTime.Now,
-                Likes = 0,
+                PostingTime = DateTime.Now,                
                 Customer = customer,
                 Text = GetPostText(status, customer, book.Book.Title, book.Book.Authors)
             };
@@ -124,8 +118,7 @@ namespace readerzone_api.Services.PostService
                                                    .Select(post => new PostDto
                                                    {
                                                        Id = post.Id,
-                                                       PostingTime = post.PostingTime,
-                                                       Likes = post.Likes,
+                                                       PostingTime = post.PostingTime,                                                       
                                                        CustomerId = post.CustomerId,
                                                        CustomerUsername = post.Customer.UserAccount.Username,
                                                        CustomerName = post.Customer.Name,
@@ -136,17 +129,16 @@ namespace readerzone_api.Services.PostService
                                                        Comments = post.Comments
                                                                       .Where(comment => !comment.Deleted)
                                                                       .Select(comment => new CommentDto
-                                                       {
-                                                           Id = comment.Id,
-                                                           PostingTime = comment.PostingTime,
-                                                           Likes = comment.Likes,
-                                                           Text = comment.Text,
-                                                           CustomerId = comment.CustomerId,
-                                                           CustomerUsername = comment.Customer.UserAccount.Username,
-                                                           CustomerName = comment.Customer.Name,
-                                                           CustomerSurname = comment.Customer.Surname,
-                                                           CustomerImageUrl = comment.Customer.ImageUrl
-                                                       }).ToList()
+                                                                      {
+                                                                          Id = comment.Id,
+                                                                          PostingTime = comment.PostingTime,                                                           
+                                                                          Text = comment.Text,
+                                                                          CustomerId = comment.CustomerId,
+                                                                          CustomerUsername = comment.Customer.UserAccount.Username,
+                                                                          CustomerName = comment.Customer.Name,
+                                                                          CustomerSurname = comment.Customer.Surname,
+                                                                          CustomerImageUrl = comment.Customer.ImageUrl
+                                                                      }).ToList()
                                                    })
                                                    .ToList();
 
@@ -163,8 +155,7 @@ namespace readerzone_api.Services.PostService
                                                 .Select(post => new PostDto
                                                 {
                                                     Id = post.Id,
-                                                    PostingTime = post.PostingTime,
-                                                    Likes = post.Likes,
+                                                    PostingTime = post.PostingTime,                                                    
                                                     CustomerId = post.CustomerId,
                                                     CustomerUsername = post.Customer.UserAccount.Username,
                                                     CustomerName = post.Customer.Name,
@@ -184,17 +175,16 @@ namespace readerzone_api.Services.PostService
                                                     Comments = post.Comments
                                                                    .Where(comment => !comment.Deleted)
                                                                    .Select(comment => new CommentDto
-                                                    {
-                                                        Id = comment.Id,
-                                                        PostingTime = comment.PostingTime,
-                                                        Likes = comment.Likes,
-                                                        Text = comment.Text,
-                                                        CustomerId = comment.CustomerId,
-                                                        CustomerUsername = comment.Customer.UserAccount.Username,
-                                                        CustomerName = comment.Customer.Name,
-                                                        CustomerSurname = comment.Customer.Surname,
-                                                        CustomerImageUrl = comment.Customer.ImageUrl
-                                                    }).ToList()
+                                                                   {
+                                                                       Id = comment.Id,
+                                                                       PostingTime = comment.PostingTime,                                                        
+                                                                       Text = comment.Text,
+                                                                       CustomerId = comment.CustomerId,
+                                                                       CustomerUsername = comment.Customer.UserAccount.Username,
+                                                                       CustomerName = comment.Customer.Name,
+                                                                       CustomerSurname = comment.Customer.Surname,
+                                                                       CustomerImageUrl = comment.Customer.ImageUrl
+                                                                   }).ToList()
                                                 })
                                                 .ToList();
 
@@ -219,8 +209,7 @@ namespace readerzone_api.Services.PostService
                                                    .Select(post => new PostDto
                                                    {
                                                        Id = post.Id,
-                                                       PostingTime = post.PostingTime,
-                                                       Likes = post.Likes,
+                                                       PostingTime = post.PostingTime,                                                       
                                                        CustomerId = post.CustomerId,
                                                        CustomerUsername = post.Customer.UserAccount.Username,
                                                        CustomerName = post.Customer.Name,
@@ -233,8 +222,7 @@ namespace readerzone_api.Services.PostService
                                                                       .Select(comment => new CommentDto
                                                                       {
                                                                           Id = comment.Id,
-                                                                          PostingTime = comment.PostingTime,
-                                                                          Likes = comment.Likes,
+                                                                          PostingTime = comment.PostingTime,                                                                          
                                                                           Text = comment.Text,
                                                                           CustomerId = comment.CustomerId,
                                                                           CustomerUsername = comment.Customer.UserAccount.Username,
@@ -252,8 +240,7 @@ namespace readerzone_api.Services.PostService
                                                 .Select(post => new PostDto
                                                 {
                                                     Id = post.Id,
-                                                    PostingTime = post.PostingTime,
-                                                    Likes = post.Likes,
+                                                    PostingTime = post.PostingTime,                                                   
                                                     CustomerId = post.CustomerId,
                                                     CustomerUsername = post.Customer.UserAccount.Username,
                                                     CustomerName = post.Customer.Name,
@@ -275,8 +262,7 @@ namespace readerzone_api.Services.PostService
                                                                    .Select(comment => new CommentDto
                                                                    {
                                                                        Id = comment.Id,
-                                                                       PostingTime = comment.PostingTime,
-                                                                       Likes = comment.Likes,
+                                                                       PostingTime = comment.PostingTime,                                                                       
                                                                        Text = comment.Text,
                                                                        CustomerId = comment.CustomerId,
                                                                        CustomerUsername = comment.Customer.UserAccount.Username,
@@ -314,8 +300,7 @@ namespace readerzone_api.Services.PostService
             }
             var comment = new Comment()
             {
-                PostingTime = DateTime.Now,
-                Likes = 0,
+                PostingTime = DateTime.Now,                
                 Text = text,
                 Post = post,
                 Customer = customer,
@@ -326,8 +311,7 @@ namespace readerzone_api.Services.PostService
             var commentDto = new CommentDto()
             {                            
                 Id = comment.Id,
-                PostingTime = comment.PostingTime,
-                Likes = comment.Likes,
+                PostingTime = comment.PostingTime,                
                 Text = comment.Text,
                 CustomerId = customer.Id,
                 CustomerUsername = customer.UserAccount.Username,

@@ -13,7 +13,7 @@ namespace readerzone_api.Models
         [JsonIgnore]
         public PurchasedBook PurchasedBook { get; set; } = null!;        
 
-        public Review(DateTime postingTime, int likes, string title, string text, int rating) : base(postingTime, likes)
+        public Review(DateTime postingTime, string title, string text, int rating) : base(postingTime)
         {
             Title = title;
             Text = text;

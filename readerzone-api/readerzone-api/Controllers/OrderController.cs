@@ -25,7 +25,7 @@ namespace readerzone_api.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize(Roles = "Admin, Manager")]
         public ActionResult CompleteOrder(int id)
         {
             _orderService.CompleteOrder(id);

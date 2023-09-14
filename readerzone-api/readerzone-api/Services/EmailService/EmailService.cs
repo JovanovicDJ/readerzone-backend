@@ -25,7 +25,8 @@ namespace readerzone_api.Services.EmailService
             email.Body = new TextPart(TextFormat.Plain)
             {
                 Text = $"Dear {name}, \n We are so glad that we got your request for registration " +
-                       $"to ReaderZone! To activate your account click on this link: https://localhost:7297/api/activate/{accountId}"
+                       $"to ReaderZone! To activate your account click on this link: https://localhost:7297/api/activate/{accountId}" +
+                       $"\nYours,\n ReaderZone team"
             };
             SendEmail(email);
         }
@@ -40,7 +41,8 @@ namespace readerzone_api.Services.EmailService
             {
                 Text = $"We have received your request for password change. In order to complete that action go " +
                        $"to this link: http://localhost:4200/login/resetPassword/{accountId}-{token} . Keep in mind" +
-                       $"that this link is valid for 15 minutes since the time this email has been sent."
+                       $"that this link is valid for 15 minutes since the time this email has been sent." +
+                       $"\nYours,\n ReaderZone team"
             };
             SendEmail(email);
         }
@@ -55,7 +57,8 @@ namespace readerzone_api.Services.EmailService
             {
                 Text = $"Dear {name} {surname}, \n We are glad to inform you that your order has been received. " +
                        $"Hard working people of ReaderZone will immediately start processing your order. " +
-                       $"Soon, you will be informed when your order starts heading your way."
+                       $"Soon, you will be informed when your order starts heading your way." +
+                       $"\nYours,\n ReaderZone team"
             };
             SendEmail(email);
         }
@@ -69,7 +72,7 @@ namespace readerzone_api.Services.EmailService
             email.Body = new TextPart(TextFormat.Plain)
             {
                 Text = $"Dear {name} {surname}, \n We are glad to inform you that your order has been processed and " +
-                       $"it's heading your way."                       
+                       $"it's heading your way. \nYours,\n ReaderZone team"
             };
             SendEmail(email);
         }

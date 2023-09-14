@@ -107,7 +107,7 @@ namespace readerzone_api.Services.FriendService
             return customer.Friends.ToList();
         }
 
-        public List<Customer> GetPossibleFrinds(string q)
+        public List<Customer> FriendSearch(string q)
         {
             var loggedUserId = GetLoggedUserId();
             var customers = _readerZoneContext.Customers
