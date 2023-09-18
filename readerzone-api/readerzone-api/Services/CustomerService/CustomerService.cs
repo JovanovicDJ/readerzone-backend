@@ -182,7 +182,7 @@ namespace readerzone_api.Services.CustomerService
 
         public List<BookData> GetBooksDataByCustomerId(int id)
         {
-            List<BookData> smallBooks = new();
+            List<BookData> booksData = new();
             var books = _readerZoneContext.PurchasedBooks.Include(pb => pb.Book)
                                                          .ThenInclude(b => b.Authors)                                                                                                                  
                                                          .Where(pb => pb.CustomerId == id)
@@ -200,10 +200,10 @@ namespace readerzone_api.Services.CustomerService
                         AuthorId = book.Book.Authors.First().Id,
                         ImageUrl = book.Book.ImageUrl
                     };
-                    smallBooks.Add(sb);
+                    booksData.Add(sb);
                 }
             }
-            return smallBooks;
+            return booksData;
         }
     }
 }

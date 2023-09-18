@@ -25,11 +25,25 @@ namespace readerzone_api.Controllers
             return Ok(authors);
         }
 
+        [HttpGet("{id}")]
+        public ActionResult<Author> GetAuthor(int id)
+        {
+            var author = _authorService.GetAuthorById(id);
+            return Ok(author);
+        }
+
         [HttpPost, Authorize(Roles = "Admin, Manager")]
         public ActionResult<Author> AddAuthor(AuthorDto authorDto)
         {
             var author = _authorService.AddAuthor(authorDto.Name, authorDto.Surname);
             return Ok(author);
+        }
+
+        [HttpGet("books/{id}")]
+        public ActionResult<List<BookData>> GetAuthorBooks(int id)
+        {
+            var books = _authorService.GetAuthorBooks(id);
+            return Ok(books);
         }
     }
 }

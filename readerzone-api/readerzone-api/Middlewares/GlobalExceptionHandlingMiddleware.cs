@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using readerzone_api.Exceptions;
 using System.Net;
 using System.Text.Json;
@@ -90,6 +91,21 @@ namespace readerzone_api.Middlewares
                     Type = "User account is not valid",
                     Title = "User account is not valid",
                     Detail = nvae.Message
+                };
+                var json = JsonSerializer.Serialize(problem);
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(json);
+            }
+            catch (DbUpdateConcurrencyException duce)
+            {
+                _logger.LogError(duce, duce.Message);
+                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                ProblemDetails problem = new()
+                {
+                    Status = (int)HttpStatusCode.Forbidden,
+                    Type = "Concurrenncy update error",
+                    Title = "Concurrenncy update error",
+                    Detail = "Could not complete transaction. Try again soon."
                 };
                 var json = JsonSerializer.Serialize(problem);
                 context.Response.ContentType = "application/json";

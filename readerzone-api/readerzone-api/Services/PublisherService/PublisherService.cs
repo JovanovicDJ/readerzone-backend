@@ -44,5 +44,28 @@ namespace readerzone_api.Services.PublisherService
             _readerZoneContext.SaveChanges();
             return publisher;
         }
+
+        public List<BookData> GetPublisherBooks(int id)
+        {
+            List<BookData> booksData = new();
+            var publisher = _readerZoneContext.Publishers.Include(p => p.Books).ThenInclude(b => b.Authors).FirstOrDefault(p => p.Id == id);
+            if (publisher == null)
+            {
+                throw new NotFoundException($"Publisher with ID {id} not found.");
+            }
+            foreach(var book in publisher.Books)
+            {
+                var sb = new BookData()
+                {
+                    Isbn = book.ISBN,
+                    Title = book.Title,
+                    Author = book.Authors.First().Name + " " + book.Authors.First().Surname,
+                    AuthorId = book.Authors.First().Id,
+                    ImageUrl = book.ImageUrl
+                };
+                booksData.Add(sb);
+            }
+            return booksData;
+        }
     }
 }

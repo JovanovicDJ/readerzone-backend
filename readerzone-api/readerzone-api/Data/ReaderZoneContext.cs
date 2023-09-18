@@ -65,7 +65,7 @@ namespace readerzone_api.Data
                 .HasOne(n => n.ToCustomer)
                 .WithMany(customer => customer.Notifications)
                 .HasForeignKey(n => n.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);     
+                .OnDelete(DeleteBehavior.Restrict);            
 
             base.OnModelCreating(modelBuilder);
         }

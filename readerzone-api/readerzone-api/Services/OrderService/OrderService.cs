@@ -104,7 +104,10 @@ namespace readerzone_api.Services.OrderService
             ICollection<Book> books = new List<Book>();
             foreach (var isbn in isbns)
             {
-                books.Add(_bookService.GetBook(isbn));
+                var book = _bookService.GetBook(isbn);
+                book.Stocks -= 1;
+                _readerZoneContext.SaveChanges();
+                books.Add(book);
             }
             return books;
         }

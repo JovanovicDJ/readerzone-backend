@@ -1,4 +1,6 @@
-﻿using readerzone_api.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using readerzone_api.Data;
+using readerzone_api.Dtos;
 using readerzone_api.Exceptions;
 using readerzone_api.Models;
 
@@ -40,6 +42,29 @@ namespace readerzone_api.Services.AuthorService
             _readerZoneContext.Authors.Add(author);
             _readerZoneContext.SaveChanges();
             return author;
+        }
+
+        public List<BookData> GetAuthorBooks(int id)
+        {
+            List<BookData> booksData = new();
+            var author = _readerZoneContext.Authors.Include(a => a.Books).FirstOrDefault(a => a.Id == id);
+            if (author == null)
+            {
+                throw new NotFoundException($"Author with ID {id} not found.");
+            }
+            foreach(var book in author.Books)
+            {
+                var sb = new BookData()
+                {
+                    Isbn = book.ISBN,
+                    Title = book.Title,                 
+                    Author = author.Name + " " + author.Surname,
+                    AuthorId = author.Id,
+                    ImageUrl = book.ImageUrl
+                };
+                booksData.Add(sb);
+            }
+            return booksData;
         }
     }
 }

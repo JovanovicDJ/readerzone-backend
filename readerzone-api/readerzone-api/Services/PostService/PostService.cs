@@ -308,6 +308,12 @@ namespace readerzone_api.Services.PostService
             };
             _readerZoneContext.Comments.Add(comment);
             _readerZoneContext.SaveChanges();
+
+            if (loggedUserId != post.CustomerId)
+            {
+                SendCommentOnPostNotification(customer, post);
+            }
+
             var commentDto = new CommentDto()
             {                            
                 Id = comment.Id,
@@ -320,6 +326,24 @@ namespace readerzone_api.Services.PostService
                 CustomerImageUrl = customer.ImageUrl
             };            
             return commentDto;
+        }
+
+        private void SendCommentOnPostNotification(Customer loggedCustomer, Post post)
+        {
+            var notification = new Notification()
+            {
+                CustomerId = post.CustomerId,
+                FromCustomerId = loggedCustomer.Id,
+                FromCustomerName = loggedCustomer.Name,
+                FromCustomerSurname = loggedCustomer.Surname,
+                FromCustomerUsername = loggedCustomer.UserAccount.Username,
+                Text = $"{loggedCustomer.Name} {loggedCustomer.Surname} commented your post.",
+                SendingTime = DateTime.Now,
+                NotificationType = NotificationType.CommentOnPost,
+                Deleted = false
+            };
+            _readerZoneContext.Notifications.Add(notification);
+            _readerZoneContext.SaveChanges();
         }
 
         public void DeleteComment(int commentId)

@@ -1,4 +1,5 @@
 ﻿using readerzone_api.Dtos;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace readerzone_api.Models
@@ -25,6 +26,8 @@ namespace readerzone_api.Models
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public string ImageUrl { get; set; } = string.Empty;
         public double AverageRating { get; set; } = 3.5;
-        public int Discount { get; set; } = 0;               
+        public int Discount { get; set; } = 0;
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = new byte[32];
     }
 }

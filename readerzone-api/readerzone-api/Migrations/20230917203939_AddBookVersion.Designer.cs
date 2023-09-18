@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using readerzone_api.Data;
 
@@ -11,9 +12,11 @@ using readerzone_api.Data;
 namespace readerzone_api.Migrations
 {
     [DbContext(typeof(ReaderZoneContext))]
-    partial class ReaderZoneContextModelSnapshot : ModelSnapshot
+    [Migration("20230917203939_AddBookVersion")]
+    partial class AddBookVersion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,18 +179,17 @@ namespace readerzone_api.Migrations
                     b.Property<DateTime>("PublishingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.Property<int>("Stocks")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bigint");
 
                     b.Property<double>("Weight")
                         .HasColumnType("float");
