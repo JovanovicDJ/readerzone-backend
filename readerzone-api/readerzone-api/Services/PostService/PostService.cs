@@ -85,6 +85,7 @@ namespace readerzone_api.Services.PostService
         {
             var newAverageRating = purchasedBook.Book.AverageRating;
             var purchasedBooks = _readerZoneContext.PurchasedBooks
+                                                   .Include(pb => pb.Review)
                                                    .Where(pb => pb.Book.Id == purchasedBook.Book.Id && pb.Review != null)
                                                    .ToList();
 
@@ -96,6 +97,7 @@ namespace readerzone_api.Services.PostService
             {
                 double totalRating = purchasedBooks.Sum(pb => pb.Review.Rating);
                 newAverageRating = totalRating / purchasedBooks.Count;
+                newAverageRating = Math.Round(newAverageRating, 1);
             }
             var book = _readerZoneContext.Books.FirstOrDefault(b => b.Id == purchasedBook.Book.Id);
             if (book != null)

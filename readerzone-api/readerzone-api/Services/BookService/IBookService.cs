@@ -10,5 +10,6 @@ namespace readerzone_api.Services.BookService
         public Book GetBook(string isbn);
         public List<Book> GetRecommendedBooks();
         public void UpdateBook(BookDto bookDto);
+        public List<Review> GetBookReviews(string isbn);
     }
 }

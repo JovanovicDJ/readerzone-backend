@@ -131,6 +131,12 @@ namespace readerzone_api.Services.BookService
             return booksOnPage;
         }
 
+        public List<Review> GetBookReviews(string isbn)
+        {
+            var reviews = _readerZoneContext.Reviews.Include(r => r.Customer).Where(r => r.PurchasedBook.Book.ISBN == isbn).OrderByDescending(r => r.Id).Take(5).ToList();
+            return reviews;
+        }
+
         public List<Book> GetRecommendedBooks()
         {
             var books = _readerZoneContext.Books
@@ -162,6 +168,6 @@ namespace readerzone_api.Services.BookService
                 genres.Add(_genreService.GetGenreByName(name));
             }
             return genres;
-        }        
+        }       
     }
 }

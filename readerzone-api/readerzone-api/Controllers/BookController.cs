@@ -46,6 +46,13 @@ namespace readerzone_api.Controllers
             return Ok(books);
         }
 
+        [HttpGet("reviews/{isbn}")]
+        public ActionResult<List<Review>> GetBookReviews(string isbn)
+        {
+            var reviews = _bookService.GetBookReviews(isbn);
+            return Ok(reviews);
+        }
+
         [HttpPut, Authorize(Roles = "Admin, Manager")]
         public ActionResult UpdateBook(BookDto bookDto)
         {
