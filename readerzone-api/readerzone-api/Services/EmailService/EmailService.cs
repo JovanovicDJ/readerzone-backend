@@ -85,6 +85,5 @@ namespace readerzone_api.Services.EmailService
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-        
     }
 }
